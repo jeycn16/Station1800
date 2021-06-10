@@ -1,9 +1,15 @@
-import tkinter
 from tkinter import *
 
 # key down function
 from PIL import ImageTk, Image
 
+class data:
+    def __init__(self, badge, serialNumber, puma, latch1, latch2):
+        self.badge = badge
+        self.serialNumber = serialNumber
+        self.puma = puma
+        self.latch1 = latch1
+        self.latch2 = latch2
 
 
 def raise_frame(frame):
@@ -12,6 +18,12 @@ def raise_frame(frame):
     """
     frame.tkraise()
 
+def login(frame, text_entry):
+    data.badge = text_entry.get()
+    if data.badge.isdigit():
+        raise_frame(frame)
+    else:
+        print("error")
 
 
 #Second Page
@@ -66,13 +78,12 @@ def main():
     text_entry = Entry(frame1, width=20, bg="white")
     text_entry.grid(row=2, column=0, sticky=W)
 
-    Button(frame1, text="SUBMIT", padx=6, command=lambda: raise_frame(frame2), bg="red").grid(row=3, column=0, sticky=W)
+    Button(frame1, text="SUBMIT", padx=6, command=lambda: login(frame2, text_entry), bg="red").grid(row=3, column=0, sticky=W)
 
     #######################
     ###    FRAME 2      ###
     #######################
 
-    badge = text_entry.get()
     Label(frame2, text="Scan the Machine (Station 1800):", bg="black", fg="white", font="none 24 bold").grid(row=0,
                                                                                                              column=0,
                                                                                                   sticky=W)
@@ -104,4 +115,5 @@ def main():
 
 
 if __name__ == "__main__":
-   main()
+    data = data("","","","","")
+    main()
