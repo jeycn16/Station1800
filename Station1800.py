@@ -25,11 +25,12 @@ class inputField:
 
 
 # Define functions
-def raise_frame(frame):
+def raise_frame(frame, inputField):
     """
-    Moves frame to the top of the GUI
+    Moves frame to the top of the GUI, sets focus on the indicated input field
     """
     frame.tkraise()
+    inputField.focus_set()
 
 
 def displayError(message):
@@ -39,23 +40,24 @@ def displayError(message):
     messagebox.showerror("Error", message)
 
 
-def login(nextFrame, inputField):
+def login(nextFrame, selfInputField, nextInputFueld):
     """
-    Saves the badge number to data.badge and displays the next frame of the GUI.
+    Saves the badge number to data.badge and displays the next frame of the GUI, setting the focus on the next input
+    field (serial number input field).
 
     If a wrong badge number is input it displays an error message and clears the badge input field
     """
-    data.badge = inputField.get()
+    data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
-        raise_frame(nextFrame)
+        raise_frame(nextFrame, nextInputFueld)
     else:
         displayError("Invalid ID")
         # Clear entry field
-        ClearField(inputField)
+        ClearField(selfInputField)
 
 
 def logoff(frame, inputField):
-    raise_frame(frame)
+    raise_frame(frame, inputField)
     ClearField(inputField)
 
 
@@ -171,18 +173,18 @@ def GUI():
     text2.grid(row=f1_iniRow, column=f1_iniCol)
     f1_iniRow += 1
 
-    badge_inputField = Entry(frame1, width=10, bg="white", font=('times','25'), justify='center')
-    badge_inputField.grid(row=f1_iniRow, column=f1_iniCol, ipady=10)
-    badge_inputField.focus_set()
+    inputField.Badge = Entry(frame1, width=10, bg="white", font=('times','25'), justify='center')
+    inputField.Badge.grid(row=f1_iniRow, column=f1_iniCol, ipady=10)
+    inputField.Badge.focus_set()
     f1_iniRow += 1
 
-    logIn_Bttn = Button(frame1, text="Log in", command=lambda: login(frame2, badge_inputField), bg="gray", font=('times','15'), relief=RAISED, borderwidth=5)
+    logIn_Bttn = Button(frame1, text="Log in", command=lambda: login(frame2, inputField.Badge, inputField.Serial), bg="gray", font=('times','15'), relief=RAISED, borderwidth=5)
     logIn_Bttn.grid(row=f1_iniRow, column=f1_iniCol, pady=8, sticky='s')
-    badge_inputField.bind('<Return>', lambda event: login(frame2, badge_inputField))
+    inputField.Badge.bind('<Return>', lambda event: login(frame2, inputField.Badge, inputField.Serial))
 
 
     # Select Frame 1 as the initial frame
-    raise_frame(frame1)
+    raise_frame(frame1, inputField.Badge)
 
     ###################################################################################################################
     ###                                                 FRAME 2                                                     ###
@@ -201,9 +203,9 @@ def GUI():
     f2_iniCol += 1
 
     inputField.Serial = Entry(frame2, width=25, bg="white", font=('times','10'))
-    inputField.Serial .grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
-    inputField.Serial .focus_set()
-    inputField.Serial .bind('<Return>', lambda event: GoToNextEntry(inputField.Serial , "serialNumber", inputField.Puma, inputField.MDL2))
+    inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    # inputField.Serial.focus_set()
+    inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial , "serialNumber", inputField.Puma, inputField.MDL2))
     f2_iniRow += 1
     f2_iniCol = 0
 
