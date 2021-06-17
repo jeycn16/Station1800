@@ -182,7 +182,7 @@ def GUI():
 
 
     # Select Frame 1 as the initial frame
-    # raise_frame(frame1)
+    raise_frame(frame1)
 
     ###################################################################################################################
     ###                                                 FRAME 2                                                     ###
@@ -240,7 +240,7 @@ def GUI():
     # f2_iniCol = 0
 
 
-    raise_frame(frame2)
+    # raise_frame(frame2)
 
     window.mainloop()
 
