@@ -126,7 +126,9 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
 
 def doMacro():
     print("hey macrooooo")
-    MES(data)
+    print(data.badge)
+    print(data.serialNumber)
+    # MES(data)
     for entry in (inputField.Serial, inputField.Puma, inputField.MDL1, inputField.MDL2):
         ClearField(entry)
     inputField.MDL2["state"] = "disabled"

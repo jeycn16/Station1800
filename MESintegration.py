@@ -21,7 +21,7 @@ def LaunchBrowser():
     return driver
 
 
-def logIntoMES(driver):
+def logIntoMES(driver, user):
     # Find Login field
     try:
         usr = driver.find_element_by_id("BadgeIDTextBox")
@@ -88,5 +88,4 @@ def MES(data):
 
 
 if __name__ == "__main__":
-
-    MES(data)
+    pass
