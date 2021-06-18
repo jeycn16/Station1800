@@ -1,7 +1,7 @@
-import tkinter
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import messagebox
+from MESintegration import MES
 
 
 # Define classes
@@ -126,8 +126,10 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
 
 def doMacro():
     print("hey macrooooo")
+    MES(data)
     for entry in (inputField.Serial, inputField.Puma, inputField.MDL1, inputField.MDL2):
         ClearField(entry)
+    inputField.MDL2["state"] = "disabled"
     inputField.Serial.focus_set()
 
 
