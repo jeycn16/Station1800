@@ -149,12 +149,6 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
     else:
         print("Error\nBad entry field")
 
-    # if attribute == "serialNumber":                             # Get unit size if serial number was scanned
-    #     data.unitSize = data.attribute[:2]
-    #
-    #     if data.unitSize == "48" or data.unitSize == "60":      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
-    #         MDL2_entry['state'] = "normal"
-
     if nextEntry != None:                                       # If a next entry field is provided, switch focus to that field
         nextEntry.focus_set()
     else:                                                       # If a next entry field is not provided, it's because we reached the final entry field
@@ -173,6 +167,7 @@ def submit():
     data.MDL1 = inputField.MDL1.get()
     data.MDL2 = inputField.MDL2.get()
     doMacro()
+
 
 def doMacro():
     print("hey macrooooo")

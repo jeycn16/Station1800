@@ -50,7 +50,7 @@ def waitForWebsite(driver, findBy, item):
 
     if findBy == "ID":
         try:
-            driver = WebDriverWait(driver, 10).until(
+            WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.ID, item))
             )
         except:
