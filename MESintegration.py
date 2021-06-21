@@ -61,30 +61,43 @@ def waitForWebsite(driver, findBy, item):
 
 
 def fillEntryBox(driver, text):
-    driver.clear()
-    driver.send_keys(text)
+    try:
+        serialEntry = driver.find_element_by_id("T7")       # serialEntry
+    except:
+        print("Couldn't find serial entry box")
+    else:
+        serialEntry.clear()
+        serialEntry.send_keys(text)
     return driver
 
-def loadButton(driver):
+def SubmitSerial(driver):
     try:
-        driver = driver.find_element_by_xpath("/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
-        # driver = driver.find_element_by_class("skbtn Action_skbtn")
-        # driver = driver.find_element_by_controlid("F10")
+        loadBttn = driver.find_element_by_xpath("/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
     except:
         print("Couldn't find load button")
     else:
-        driver.click()
+        loadBttn.click()
     return driver
 
-def MES(data):
-    # user = "007663"
+
+
+
+
+#--------------------------------------------------------------------------------------------------------------#
+def MESLogIn(data):
     driver = LaunchBrowser()
     # driver = waitForWebsite(driver, "ID", "LogInButton")
     driver = logIntoMES(driver, data.badge)
     driver = waitForWebsite(driver, "ID", "T7")
+    return driver
+
+def MESWork(data, driver):
     driver = fillEntryBox(driver, data.serialNumber)                 # Input serial number
-    driver = loadButton(driver)
-    return
+    driver = SubmitSerial(driver)
+    return driver
+
+def MESLogout(driver):
+    driver.quit()
 
 
 if __name__ == "__main__":

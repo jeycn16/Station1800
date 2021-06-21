@@ -1,7 +1,9 @@
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import messagebox
-from MESintegration import MES
+from MESintegration import MESLogIn
+from MESintegration import MESWork
+from MESintegration import MESLogout
 
 
 # Define classes
@@ -22,6 +24,10 @@ class inputField:
         self.Puma = Puma
         self.MDL1 = MDL1
         self.MDL2 = MDL2
+
+class driver:
+    def __init__(self, driver):
+        self.driver = driver
 
 
 # Define functions
@@ -49,6 +55,12 @@ def login(nextFrame, selfInputField, nextInputFueld):
     """
     data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
+        driver.driver = MESLogIn(data)
+        ClearField(inputField.Serial)
+        ClearField(inputField.Puma)
+        ClearField(inputField.MDL1)
+        ClearField(inputField.MDL2)
+
         raise_frame(nextFrame, nextInputFueld)
     else:
         displayError("Invalid ID")
@@ -56,9 +68,11 @@ def login(nextFrame, selfInputField, nextInputFueld):
         ClearField(selfInputField)
 
 
-def logoff(frame, inputField):
-    raise_frame(frame, inputField)
-    ClearField(inputField)
+def Logout(nextFrame):
+    MESLogout(driver.driver)
+    ClearField(inputField.Badge)
+    raise_frame(nextFrame, inputField.Badge)
+
 
 
 def ClearField(inputField):
@@ -66,6 +80,18 @@ def ClearField(inputField):
     Clears the input field provided
     """
     inputField.delete(0,END)
+
+
+def clearUnitEntryFields():
+    """
+    Clears every input field in the second frame (serial number, puma, MDL1, MDL2)
+    """
+    for entry in (inputField.Serial, inputField.Puma, inputField.MDL1, inputField.MDL2):
+        ClearField(entry)
+    data.serialNumber = ""
+    data.puma = ""
+    data.MDL1 = ""
+    data.MDL2 = ""
 
 
 def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
@@ -104,13 +130,30 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
     :param MDL2_entry: the last input field (MDL2). If this parameter is not specified it will take the value None
     :return: No returns
     """
-    data.attribute = selfEntry.get()                            # Save serial number
-
-    if attribute == "serialNumber":                             # Get unit size if serial number was scanned
-        data.unitSize = data.attribute[:2]
-
+    # data.attribute = selfEntry.get()                            # Save serial number
+    if attribute == "serialNumber":
+        data.serialNumber = selfEntry.get()
+        data.unitSize = data.serialNumber[:2]
         if data.unitSize == "48" or data.unitSize == "60":      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
             MDL2_entry['state'] = "normal"
+
+    elif attribute == "puma":
+        data.puma = selfEntry.get()
+
+    elif attribute == "MDL1":
+        data.MDL1 = selfEntry.get()
+
+    elif attribute == "MDL2":
+        data.MDL2 = selfEntry.get()
+
+    else:
+        print("Error\nBad entry field")
+
+    # if attribute == "serialNumber":                             # Get unit size if serial number was scanned
+    #     data.unitSize = data.attribute[:2]
+    #
+    #     if data.unitSize == "48" or data.unitSize == "60":      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
+    #         MDL2_entry['state'] = "normal"
 
     if nextEntry != None:                                       # If a next entry field is provided, switch focus to that field
         nextEntry.focus_set()
@@ -124,15 +167,19 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
             doMacro()
 
 
+def submit():
+    data.serialNumber = inputField.Serial.get()
+    data.puma = inputField.Puma.get()
+    data.MDL1 = inputField.MDL1.get()
+    data.MDL2 = inputField.MDL2.get()
+    doMacro()
+
 def doMacro():
     print("hey macrooooo")
-    print(data.badge)
-    print(data.serialNumber)
-    # MES(data)
-    for entry in (inputField.Serial, inputField.Puma, inputField.MDL1, inputField.MDL2):
-        ClearField(entry)
-    inputField.MDL2["state"] = "disabled"
-    inputField.Serial.focus_set()
+    driver.driver = MESWork(data, driver.driver)            # Call driver and input data
+    clearUnitEntryFields()                                  # Clear entry fields and data stored
+    inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
+    inputField.Serial.focus_set()                           # Set focus on serial input field
 
 
 def GUI():
@@ -242,8 +289,15 @@ def GUI():
     inputField.MDL2.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL2.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL2, "MDL2"))
     inputField.MDL2["state"] = "disabled"
-    # f2_iniRow += 1
-    # f2_iniCol = 0
+    f2_iniRow += 1
+    f2_iniCol = 0
+
+    logOut_Bttn = Button(frame2, text="Log out", command=lambda: Logout(frame1), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
+    logOut_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    f2_iniCol += 1
+
+    Submit_Bttn = Button(frame2, text="Submit", command=lambda: submit(), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
+    Submit_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
 
 
     # raise_frame(frame2)
@@ -255,6 +309,7 @@ if __name__ == "__main__":
     # Initialize variables
     data = data("","","","","","")
     inputField = inputField(None, None, None, None, None)
+    driver = driver(None)
 
     # Execute GUI
     GUI()
