@@ -55,7 +55,7 @@ def login(nextFrame, selfInputField, nextInputFueld):
     """
     data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
-        driver.driver = MESLogIn(data)
+        # driver.driver = MESLogIn(data)
         ClearField(inputField.Serial)
         ClearField(inputField.Puma)
         ClearField(inputField.MDL1)
@@ -133,8 +133,15 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
     # data.attribute = selfEntry.get()                            # Save serial number
     if attribute == "serialNumber":
         data.serialNumber = selfEntry.get()
-        data.unitSize = data.serialNumber[:2]
-        if data.unitSize == "48" or data.unitSize == "60":      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
+        data.unitSize = data.serialNumber[27:29]
+        if not data.unitSize.isdigit():             #   todo fix
+            displayError("Wrong unit size")
+            ClearField(selfEntry)
+            return
+        else:
+            data.unitSize = int(data.unitSize)
+
+        if data.unitSize == 48 or data.unitSize == 60:      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
             MDL2_entry['state'] = "normal"
 
     elif attribute == "puma":
@@ -171,7 +178,7 @@ def submit():
 
 def doMacro():
     print("hey macrooooo")
-    driver.driver = MESWork(data, driver.driver)            # Call driver and input data
+    # driver.driver = MESWork(data, driver.driver)            # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
     inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
     inputField.Serial.focus_set()                           # Set focus on serial input field
