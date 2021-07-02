@@ -1,3 +1,6 @@
+import os
+import subprocess
+import clipboard
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import messagebox
@@ -162,7 +165,7 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
         doMacro()                                               # execute macro
 
     if attribute == "MDL1":                                     # If we're scanning MDL1, go to next entry field (MDL2) if unit requires it.
-        if (data.unitSize == "48" or data.unitSize == "60"):
+        if (data.unitSize == 48 or data.unitSize == 60):
             nextEntry.focus_set()
         else:                                                   # Otherwise execute macro
             doMacro()
@@ -177,8 +180,28 @@ def submit():
 
 
 def doMacro():
+    print("Saving Values")
+    print(data.serialNumber)
+    sotredValues_Path = os.path.join(HiddenFolder, "Stored values.txt")
+    with open(sotredValues_Path, 'w') as outfile:
+        outfile.write(str(data.badge) + "\n")
+        outfile.write(data.serialNumber + "\n")
+        outfile.write(str(data.unitSize) + "\n")
+        outfile.write(data.puma + "\n")
+        outfile.write(data.MDL1 + "\n")
+        outfile.write(data.MDL2 + "\n")
+
+
+    # Put path to the txt file in ram memory
+    clipboard.copy(sotredValues_Path)
+
+    # Call a macro to start the test
+    # subprocess.call([".\\Macros\\LabViewIntegration.exe"])
+
+
     print("hey macrooooo")
     # driver.driver = MESWork(data, driver.driver)            # Call driver and input data
+    # driver.driver = MESCheckTest(data, driver.driver)            # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
     inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
     inputField.Serial.focus_set()                           # Set focus on serial input field
@@ -312,6 +335,14 @@ if __name__ == "__main__":
     data = data("","","","","","")
     inputField = inputField(None, None, None, None, None)
     driver = driver(None)
+
+    # Create hidden folder to store data
+    HiddenFolder = os.path.join(os.path.expanduser("~"), 'Documents', 'Macro for 1800')
+    if not os.path.isdir(HiddenFolder):
+        os.mkdir(HiddenFolder)
+        # This makes the folder invisible
+        subprocess.check_call(["attrib", "+H", HiddenFolder])
+
 
     # Execute GUI
     GUI()
