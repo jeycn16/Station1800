@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import clipboard
 from tkinter import *
@@ -34,6 +35,20 @@ class driver:
 
 
 # Define functions
+
+# def resource_path(relative_path):
+#     """ Get absolute path to resource, works for dev and for PyInstaller """
+#     try:
+#         # PyInstaller creates a temp folder and stores path in _MEIPASS
+#         base_path = sys._MEIPASS
+#     except Exception:
+#         base_path = os.path.abspath(".")
+#
+#     return os.path.join(base_path, relative_path)
+
+def resource_path(relative):
+    return os.path.join(os.environ.get("_MEIPASS2", os.path.abspath(".")), relative)
+
 def raise_frame(frame, inputField):
     """
     Moves frame to the top of the GUI, sets focus on the indicated input field
@@ -58,7 +73,7 @@ def login(nextFrame, selfInputField, nextInputFueld):
     """
     data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
-        # driver.driver = MESLogIn(data)
+        driver.driver = MESLogIn(data)
         ClearField(inputField.Serial)
         ClearField(inputField.Puma)
         ClearField(inputField.MDL1)
@@ -196,11 +211,11 @@ def doMacro():
     clipboard.copy(sotredValues_Path)
 
     # Call a macro to start the test
-    # subprocess.call([".\\Macros\\LabViewIntegration.exe"])
+    subprocess.call([".\\Macro\\LabViewIntegration.exe"])
 
 
     print("hey macrooooo")
-    # driver.driver = MESWork(data, driver.driver)            # Call driver and input data
+    driver.driver = MESWork(data, driver.driver)            # Call driver and input data
     # driver.driver = MESCheckTest(data, driver.driver)            # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
     inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
@@ -217,8 +232,13 @@ def GUI():
     # window.geometry('626x403')
     window.resizable(width=False, height=False)
 
-    image = "OIP.jpg"
-    photo = ImageTk.PhotoImage(Image.open(image))
+    icon_Path = ".\\Media\\SmartGuy_Ico.ico"
+    # icon_Path = resource_path(".\\Media\\SmartGuy_Ico.ico")
+    window.iconbitmap(icon_Path)
+
+    backgroungImage_Path = ".\\Media\\Wolf Logo.jpg"
+    # backgroungImage_Path = resource_path(".\\Media\\Wolf Logo.jpg")
+    backgroungImage = ImageTk.PhotoImage(Image.open(backgroungImage_Path))
 
     # Place frames
     frame1 = Frame(window)
@@ -237,7 +257,8 @@ def GUI():
     f1_iniRow = 0
     f1_iniCol = 0
 
-    wolfLogo = Label(frame1, image=photo)
+    wolfLogo = Label(frame1, image=backgroungImage)
+    # wolfLogo = Label(frame1, bg="black")
     wolfLogo.grid(row=f1_iniRow, column=f1_iniCol, sticky='w')
     f1_iniRow += 1
 
