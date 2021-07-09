@@ -151,7 +151,15 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
     # data.attribute = selfEntry.get()                            # Save serial number
     if attribute == "serialNumber":
         data.serialNumber = selfEntry.get()
-        data.unitSize = data.serialNumber[27:29]
+
+        serialNum = data.serialNumber
+
+        unitSize = serialNum.split("$")[3].lstrip()  #slicing through serial number
+        type = "DF"
+        unitSize = unitSize[unitSize.index(type) + len(type):][0:2] #size
+
+        data.unitSize = unitSize
+
         if not data.unitSize.isdigit():             #   todo fix
             displayError("Wrong unit size")
             ClearField(selfEntry)
@@ -228,6 +236,7 @@ def GUI():
     """
     # Define window parameters
     window = Tk()
+    window.attributes('-topmost', True)
     window.title("Station 1800 Scanning")
     # window.geometry('626x403')
     window.resizable(width=False, height=False)
