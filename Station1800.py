@@ -8,9 +8,16 @@ from tkinter import messagebox
 from MESintegration import MESLogIn
 from MESintegration import MESWork
 from MESintegration import MESLogout
+import time
+
 
 
 # Define classes
+class time:
+    def __init__(self, first, last):
+        self.first = first
+        self.last = last
+
 class data:
     def __init__(self, badge, serialNumber, puma, MDL1, MDL2, unitSize):
         self.badge = badge
@@ -74,6 +81,7 @@ def login(nextFrame, selfInputField, nextInputFueld):
     data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
         driver.driver = MESLogIn(data)
+        time.first = time.perf_counter()
         ClearField(inputField.Serial)
         ClearField(inputField.Puma)
         ClearField(inputField.MDL1)
@@ -153,10 +161,21 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
         data.serialNumber = selfEntry.get()
 
         serialNum = data.serialNumber
+        unitSize = ""
 
-        unitSize = serialNum.split("$")[3].lstrip()  #slicing through serial number
-        type = "DF"
-        unitSize = unitSize[unitSize.index(type) + len(type):][0:2] #size
+        if "$" in serialNum:
+            unitSize = serialNum.split("$")[3].lstrip()  #slicing through serial number to just the model code "DF48...."
+            if unitSize.startswith("DF") or unitSize.startswith("IR"):
+                unitSize = unitSize[2:4]
+            else:
+                messagebox.showerror("", "invalid serial")
+        else:
+            messagebox.showerror("Invalid serial")
+
+
+
+        #type = "DF"
+        #unitSize = unitSize[unitSize.index(type) + len(type):][0:2] #size
 
         data.unitSize = unitSize
 
@@ -200,6 +219,11 @@ def submit():
     data.MDL1 = inputField.MDL1.get()
     data.MDL2 = inputField.MDL2.get()
     doMacro()
+    time.last = time.perf_counter() #taking time after each unit done
+
+    if time.last - time.first > 28800: #logout after 8 hours
+        GUI()
+        messagebox.showwarning("Shift Over", "Your shift for the day is over, bye")
 
 
 def doMacro():
@@ -226,7 +250,8 @@ def doMacro():
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data
     # driver.driver = MESCheckTest(data, driver.driver)            # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
-    inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
+    inputField.MDL2["state"] = "disabled"
+                               # Disable MDL2 input field
     inputField.Serial.focus_set()                           # Set focus on serial input field
 
 
