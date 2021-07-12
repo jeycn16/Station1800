@@ -236,6 +236,7 @@ def doMacro():
     # Put path to the txt file in ram memory
     clipboard.copy(sotredValues_Path)
 
+    time.sleep(5)
     print("Start LabViewIntegration")
     # Call a macro to start the test
     subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
@@ -263,7 +264,7 @@ def GUI():
     """
     # Define window parameters
     window = Tk()
-    window.attributes('-topmost', True)
+    # window.attributes('-topmost', True)
     window.title("Station 1800 Scanning")
     # window.geometry('626x403')
     window.resizable(width=False, height=False)
@@ -277,7 +278,6 @@ def GUI():
     backgroungImage = ImageTk.PhotoImage(Image.open(backgroungImage_Path))
 
     # Place frames
-    # frame1 = Frame(window)
     loginFrame = Frame(window)
     scanFrame = Frame(window)
     for frame in (loginFrame, scanFrame):
