@@ -14,6 +14,9 @@ import time
 # bring Gui to forefront after logging in and after macro
 
 # Define classes
+
+
+
 class _time:
     def __init__(self, clockIn, lastScan):
         self.clockIn = clockIn
@@ -81,7 +84,7 @@ def login(nextFrame, selfInputField, nextInputFueld):
     """
     data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
-        driver.driver = MESLogIn(data)
+        driver.driver = MESLogIn(data)                                                                                # MES Integration
         workingTime.clockIn = time.perf_counter()
         ClearField(inputField.Serial)
         ClearField(inputField.Puma)
@@ -235,11 +238,11 @@ def doMacro():
 
     print("Start LabViewIntegration")
     # Call a macro to start the test
-    subprocess.call([".\\Macro\\LabViewIntegration.exe"])
+    subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
 
 
     print("Start MES integration")
-    driver.driver = MESWork(data, driver.driver)            # Call driver and input data
+    # driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
     # driver.driver = MESCheckTest(data, driver.driver)            # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
     inputField.MDL2["state"] = "disabled"
@@ -250,10 +253,11 @@ def doMacro():
 
     if workingTime.lastScan - workingTime.clockIn > 28800:  #logout after 8 hours
         messagebox.showwarning("Shift Over", "Your shift for the day is over, bye")
-        Logout(frame1)
+        Logout(loginFrame)
 
 
 def GUI():
+    global loginFrame
     """
     This is the user interface. It contains only the buttons and entry boxes that the user can interact with
     """
@@ -273,9 +277,10 @@ def GUI():
     backgroungImage = ImageTk.PhotoImage(Image.open(backgroungImage_Path))
 
     # Place frames
-    frame1 = Frame(window)
-    frame2 = Frame(window)
-    for frame in (frame1, frame2):
+    # frame1 = Frame(window)
+    loginFrame = Frame(window)
+    scanFrame = Frame(window)
+    for frame in (loginFrame, scanFrame):
         frame.grid(row=0, column=0, sticky='news')
 
 
@@ -289,31 +294,31 @@ def GUI():
     f1_iniRow = 0
     f1_iniCol = 0
 
-    wolfLogo = Label(frame1, image=backgroungImage)
-    # wolfLogo = Label(frame1, bg="black")
+    wolfLogo = Label(loginFrame, image=backgroungImage)
+    # wolfLogo = Label(loginFrame, bg="black")
     wolfLogo.grid(row=f1_iniRow, column=f1_iniCol, sticky='w')
     f1_iniRow += 1
 
-    text1 = Label(frame1, text="Welcome", fg="black", font=('times','35', 'bold'))
+    text1 = Label(loginFrame, text="Welcome", fg="black", font=('times','35', 'bold'))
     text1.grid(row=f1_iniRow, column=f1_iniCol)
     f1_iniRow += 1
 
-    text2 = Label(frame1, text="Scan your ID:", fg="black", font=('times','25'))
+    text2 = Label(loginFrame, text="Scan your ID:", fg="black", font=('times','25'))
     text2.grid(row=f1_iniRow, column=f1_iniCol)
     f1_iniRow += 1
 
-    inputField.Badge = Entry(frame1, width=10, bg="white", font=('times','25'), justify='center')
+    inputField.Badge = Entry(loginFrame, width=10, bg="white", font=('times','25'), justify='center')
     inputField.Badge.grid(row=f1_iniRow, column=f1_iniCol, ipady=10)
     inputField.Badge.focus_set()
     f1_iniRow += 1
 
-    logIn_Bttn = Button(frame1, text="Log in", command=lambda: login(frame2, inputField.Badge, inputField.Serial), bg="gray", font=('times','15'), relief=RAISED, borderwidth=5)
+    logIn_Bttn = Button(loginFrame, text="Log in", command=lambda: login(scanFrame, inputField.Badge, inputField.Serial), bg="gray", font=('times','15'), relief=RAISED, borderwidth=5)
     logIn_Bttn.grid(row=f1_iniRow, column=f1_iniCol, pady=8, sticky='s')
-    inputField.Badge.bind('<Return>', lambda event: login(frame2, inputField.Badge, inputField.Serial))
+    inputField.Badge.bind('<Return>', lambda event: login(scanFrame, inputField.Badge, inputField.Serial))
 
 
     # Select Frame 1 as the initial frame
-    raise_frame(frame1, inputField.Badge)
+    raise_frame(loginFrame, inputField.Badge)
 
     ###################################################################################################################
     ###                                                 FRAME 2                                                     ###
@@ -327,11 +332,11 @@ def GUI():
     f2_padx = 10
     f2_pady = 10
 
-    text3 =Label(frame2, text= "Scan pallet label:", fg="black", font=('times','25'))
+    text3 =Label(scanFrame, text= "Scan pallet label:", fg="black", font=('times','25'))
     text3.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.Serial = Entry(frame2, width=25, bg="white", font=('times','10'))
+    inputField.Serial = Entry(scanFrame, width=25, bg="white", font=('times','10'))
     inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     # inputField.Serial.focus_set()
     inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial , "serialNumber", inputField.Puma, inputField.MDL2))
@@ -339,46 +344,46 @@ def GUI():
     f2_iniCol = 0
 
 
-    text4 = Label(frame2, text= "Scan Puma:", fg="black", font=('times','25'))
+    text4 = Label(scanFrame, text= "Scan Puma:", fg="black", font=('times','25'))
     text4.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.Puma = Entry(frame2, width=25, bg="white")
+    inputField.Puma = Entry(scanFrame, width=25, bg="white")
     inputField.Puma.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.Puma.bind('<Return>', lambda event: GoToNextEntry(inputField.Puma, "puma", inputField.MDL1))
     f2_iniRow += 1
     f2_iniCol = 0
 
-    text5 = Label(frame2, text= "Scan MDL:", fg="black", font=('times','25'))
+    text5 = Label(scanFrame, text= "Scan MDL:", fg="black", font=('times','25'))
     text5.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.MDL1 = Entry(frame2, width=25, bg="white")
+    inputField.MDL1 = Entry(scanFrame, width=25, bg="white")
     inputField.MDL1.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL1.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL1, "MDL1", inputField.MDL2))
     f2_iniRow += 1
     f2_iniCol = 0
 
-    text6 = Label(frame2, text="Scan MDL:", fg="black", font=('times', '25'))
+    text6 = Label(scanFrame, text="Scan MDL:", fg="black", font=('times', '25'))
     text6.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.MDL2 = Entry(frame2, width=25, bg="white")
+    inputField.MDL2 = Entry(scanFrame, width=25, bg="white")
     inputField.MDL2.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL2.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL2, "MDL2"))
     inputField.MDL2["state"] = "disabled"
     f2_iniRow += 1
     f2_iniCol = 0
 
-    logOut_Bttn = Button(frame2, text="Log out", command=lambda: Logout(frame1), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
+    logOut_Bttn = Button(scanFrame, text="Log out", command=lambda: Logout(loginFrame), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
     logOut_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    Submit_Bttn = Button(frame2, text="Submit", command=lambda: submit(), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
+    Submit_Bttn = Button(scanFrame, text="Submit", command=lambda: submit(), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
     Submit_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
 
 
-    # raise_frame(frame2)
+    # raise_frame(scanFrame)
 
     window.mainloop()
 
@@ -389,6 +394,7 @@ if __name__ == "__main__":
     inputField = inputField(None, None, None, None, None)
     driver = driver(None)
     workingTime = _time(0, 0)
+
 
     # Create hidden folder to store data
     HiddenFolder = os.path.join(os.path.expanduser("~"), 'Documents', 'Macro for 1800')

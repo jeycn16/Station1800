@@ -15,8 +15,8 @@ def LaunchBrowser():
     MESWebSite = "http://FIT-WCAPP-01.subzero.com:8000/EnterpriseConsole/BPMUITemplates/Default/Repository/Site/CustomLogin.aspx?ListItemId=E0A7E9D4-02F2-4C6D-898C-8714B73C8C08&FormLink=NGDF%20Station%201800"
     # import Chrome web driver
     path = ".\\Drivers\\chromedriver.exe"
-    driver = webdriver.Chrome(path)
-    # driver = webdriver.Chrome(ChromeDriverManager().install())
+    # driver = webdriver.Chrome(path)
+    driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
     driver.get(MESWebSite)
