@@ -1,5 +1,4 @@
 import os
-import sys
 import subprocess
 import clipboard
 from tkinter import *
@@ -9,6 +8,8 @@ from MESintegration import MESLogIn
 from MESintegration import MESWork
 from MESintegration import MESLogout
 
+# TODO
+# bring Gui to forefront after logging in and after macro
 
 # Define classes
 class data:
@@ -210,11 +211,12 @@ def doMacro():
     # Put path to the txt file in ram memory
     clipboard.copy(sotredValues_Path)
 
+    print("Start LabViewIntegration")
     # Call a macro to start the test
     subprocess.call([".\\Macro\\LabViewIntegration.exe"])
 
 
-    print("hey macrooooo")
+    print("Start MES integration")
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data
     # driver.driver = MESCheckTest(data, driver.driver)            # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored

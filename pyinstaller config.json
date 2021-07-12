@@ -59,15 +59,15 @@
   },
   {
    "optionDest": "datas",
-   "value": "C:/_Code/Station1800/Drivers;Drivers/"
+   "value": "C:/_Code/Station1800/Drivers;./Drivers"
   },
   {
    "optionDest": "datas",
-   "value": "C:/_Code/Station1800/Macro;Macro/"
+   "value": "C:/_Code/Station1800/Macro;./Macro"
   },
   {
    "optionDest": "datas",
-   "value": "C:/_Code/Station1800/Media;Media/"
+   "value": "C:/_Code/Station1800/Media;./Media"
   }
  ],
  "nonPyinstallerOptions": {
