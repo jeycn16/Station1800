@@ -75,7 +75,7 @@ def displayError(message):
     messagebox.showerror("Error", message)
 
 
-def login(nextFrame, selfInputField, nextInputFueld):
+def login(nextFrame, selfInputField, nextInputField):
     """
     Saves the badge number to data.badge and displays the next frame of the GUI, setting the focus on the next input
     field (serial number input field).
@@ -91,7 +91,10 @@ def login(nextFrame, selfInputField, nextInputFueld):
         ClearField(inputField.MDL1)
         ClearField(inputField.MDL2)
 
-        raise_frame(nextFrame, nextInputFueld)
+        raise_frame(nextFrame, nextInputField)
+        raiseAgain(nextFrame,nextInputField)
+
+
     else:
         displayError("Invalid ID")
         # Clear entry field
@@ -102,6 +105,10 @@ def Logout(nextFrame):
     MESLogout(driver.driver)
     ClearField(inputField.Badge)
     raise_frame(nextFrame, inputField.Badge)
+
+def raiseAgain(frame, nextInputField):
+    frame.focus_force()
+    nextInputField.focus_set()
 
 
 
@@ -335,6 +342,7 @@ def GUI():
     text3 =Label(scanFrame, text= "Scan pallet label:", fg="black", font=('times','25'))
     text3.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
+
 
     inputField.Serial = Entry(scanFrame, width=25, bg="white", font=('times','10'))
     inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
