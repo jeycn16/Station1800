@@ -14,10 +14,10 @@ import time
 # bring Gui to forefront after logging in and after macro
 
 # Define classes
-class time:
-    def __init__(self, first, last):
-        self.first = first
-        self.last = last
+class _time:
+    def __init__(self, clockIn, lastScan):
+        self.clockIn = clockIn
+        self.lastScan = lastScan
 
 class data:
     def __init__(self, badge, serialNumber, puma, MDL1, MDL2, unitSize):
@@ -82,7 +82,7 @@ def login(nextFrame, selfInputField, nextInputFueld):
     data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
         driver.driver = MESLogIn(data)
-        time.first = time.perf_counter()
+        workingTime.clockIn = time.perf_counter()
         ClearField(inputField.Serial)
         ClearField(inputField.Puma)
         ClearField(inputField.MDL1)
@@ -165,27 +165,21 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
         unitSize = ""
 
         if "$" in serialNum:
-            unitSize = serialNum.split("$")[3].lstrip()  #slicing through serial number to just the model code "DF48...."
+            unitSize = serialNum.split("$")[3]  #slicing through serial number to just the model code "DF48...."
             if unitSize.startswith("DF") or unitSize.startswith("IR"):
-                unitSize = unitSize[2:4]
+                try:
+                    unitSize = int(unitSize[2:4])
+                except:
+                    displayError("Problems finding the unit size in serial")
+                    ClearField(selfEntry)                       # Clear entry field
             else:
-                messagebox.showerror("", "invalid serial")
+                displayError("Problems finding the unit type in serial")
+                ClearField(selfEntry)                           # Clear entry field
         else:
-            messagebox.showerror("Invalid serial")
+            displayError("Serial string could not be parsed")
+            ClearField(selfEntry)                               # Clear entry field
 
-
-
-        #type = "DF"
-        #unitSize = unitSize[unitSize.index(type) + len(type):][0:2] #size
-
-        data.unitSize = unitSize
-
-        if not data.unitSize.isdigit():             #   todo fix
-            displayError("Wrong unit size")
-            ClearField(selfEntry)
-            return
-        else:
-            data.unitSize = int(data.unitSize)
+        data.unitSize = unitSize                                # Save unit size
 
         if data.unitSize == 48 or data.unitSize == 60:      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
             MDL2_entry['state'] = "normal"
@@ -220,11 +214,7 @@ def submit():
     data.MDL1 = inputField.MDL1.get()
     data.MDL2 = inputField.MDL2.get()
     doMacro()
-    time.last = time.perf_counter() #taking time after each unit done
 
-    if time.last - time.first > 28800: #logout after 8 hours
-        GUI()
-        messagebox.showwarning("Shift Over", "Your shift for the day is over, bye")
 
 
 def doMacro():
@@ -255,6 +245,12 @@ def doMacro():
     inputField.MDL2["state"] = "disabled"
                                # Disable MDL2 input field
     inputField.Serial.focus_set()                           # Set focus on serial input field
+
+    workingTime.lastScan = time.perf_counter()              # Taking time after each unit done
+
+    if workingTime.lastScan - workingTime.clockIn > 28800:  #logout after 8 hours
+        messagebox.showwarning("Shift Over", "Your shift for the day is over, bye")
+        Logout(frame1)
 
 
 def GUI():
@@ -392,6 +388,7 @@ if __name__ == "__main__":
     data = data("","","","","","")
     inputField = inputField(None, None, None, None, None)
     driver = driver(None)
+    workingTime = _time(0, 0)
 
     # Create hidden folder to store data
     HiddenFolder = os.path.join(os.path.expanduser("~"), 'Documents', 'Macro for 1800')
