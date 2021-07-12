@@ -92,7 +92,7 @@ def login(nextFrame, selfInputField, nextInputField):
         ClearField(inputField.MDL2)
 
         raise_frame(nextFrame, nextInputField)
-        raiseAgain(nextFrame,nextInputField)
+        BringGUI2Front(nextFrame, nextInputField)
 
 
     else:
@@ -106,10 +106,10 @@ def Logout(nextFrame):
     ClearField(inputField.Badge)
     raise_frame(nextFrame, inputField.Badge)
 
-def raiseAgain(frame, nextInputField):
+
+def BringGUI2Front(frame, nextInputField):
     frame.focus_force()
     nextInputField.focus_set()
-
 
 
 def ClearField(inputField):
@@ -250,7 +250,7 @@ def doMacro():
 
 
     print("Start MES integration")
-    # driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
+    driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
     # driver.driver = MESCheckTest(data, driver.driver)            # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
     inputField.MDL2["state"] = "disabled"

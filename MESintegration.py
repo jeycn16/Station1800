@@ -15,8 +15,8 @@ def LaunchBrowser():
     MESWebSite = "http://FIT-WCAPP-01.subzero.com:8000/EnterpriseConsole/BPMUITemplates/Default/Repository/Site/CustomLogin.aspx?ListItemId=E0A7E9D4-02F2-4C6D-898C-8714B73C8C08&FormLink=NGDF%20Station%201800"
     # import Chrome web driver
     path = ".\\Drivers\\chromedriver.exe"
-    # driver = webdriver.Chrome(path)
-    driver = webdriver.Chrome(ChromeDriverManager().install())
+    driver = webdriver.Chrome(path)
+    # driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
     driver.get(MESWebSite)
@@ -157,14 +157,14 @@ def MESWork(data, driver):
     driver = waitForWebsite(driver, "ID", "T2")
     driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.puma, ID="T2")
     entryBox.send_keys(Keys.RETURN)
-    time.sleep(10)
+    time.sleep(2)
     driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.MDL1, ID="T2")
     entryBox.send_keys(Keys.RETURN)
-    time.sleep(10)
+    time.sleep(2)
     if data.unitSize == 48 or data.unitSize == 60:
         driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.MDL2, ID="T2")
         entryBox.send_keys(Keys.RETURN)
-        time.sleep(10)
+        time.sleep(2)
     # driver = fillEntryBox(driver, "XPath", "Couldn't find vendor barcode entry box, Xpath", data.puma, XPath="/html/body/form/div/div[7]/div[2]/div/div/div[1]/div/div[4]/div/div[2]/div[2]/div[1]/div[2]/input")
     # time.sleep(1)
     # try:
