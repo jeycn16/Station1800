@@ -1,0 +1,7 @@
+%SCRIPT_DIR%\Macro image files\RunButton2JPEG.jpg
+%SCRIPT_DIR%\Macro image files\GreenCheckButton.bmp
+%SCRIPT_DIR%\Macro image files\TestPassed.bmp
+2
+0.3
+0.7
+0.7
