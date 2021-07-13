@@ -68,6 +68,10 @@
   {
    "optionDest": "datas",
    "value": "C:/_Code/Station1800/Media;./Media"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/_Code/Station1800/LabViewIntegrationKiller.exe;."
   }
  ],
  "nonPyinstallerOptions": {
