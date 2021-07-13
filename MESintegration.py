@@ -32,8 +32,20 @@ def LaunchBrowser():
     MESWebSite = "http://FIT-WCAPP-01.subzero.com:8000/EnterpriseConsole/BPMUITemplates/Default/Repository/Site/CustomLogin.aspx?ListItemId=E0A7E9D4-02F2-4C6D-898C-8714B73C8C08&FormLink=NGDF%20Station%201800"
     # import Chrome web driver
 
+    listOfChromeDrivers = fileList(".\\Drivers\\", [".exe"])
 
-    try:
+    for x in listOfChromeDrivers:
+        try:
+            driver = webdriver.Chrome(os.path.join(".\\Drivers\\", x))
+            driver.get(MESWebSite)
+            return driver
+        except:
+            pass
+    print("None of the drivers worked")
+    exit(0)
+
+
+"""    try:
         driver = webdriver.Chrome(ChromeDriverManager().install())
         driver.get(MESWebSite)
         return driver
@@ -48,7 +60,7 @@ def LaunchBrowser():
                 return driver
             except:
                 pass
-        print("None of the drivers worked")
+        print("None of the drivers worked")"""
 
 
 
@@ -124,6 +136,7 @@ def waitForWebsite(driver, findBy, item):
 
 
 def fillEntryBox(driver,findBy, errorMessage, text, ID=None, XPath=None, Class=None):
+    x = None
     if findBy == "ID":
         try:
             x = driver.find_element_by_id(ID)

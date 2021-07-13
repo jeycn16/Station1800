@@ -242,6 +242,7 @@ def doMacro():
 
     # Put path to the txt file in ram memory
     clipboard.copy(sotredValues_Path)
+    # clipboard.copy(".\\Stored values.txt")
 
     time.sleep(5)
     print("Start LabViewIntegration")
