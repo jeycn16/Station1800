@@ -24,3 +24,23 @@ initial_Time = time.perf_counter()
 finalTime = time.perf_counter()
 
 print(finalTime - initial_Time)
+
+def fileList(directory, *extension):
+    """
+    This program takes a directory path as input, then returns a list with all the files inside that folder
+    that end with the extensions provided
+    """
+    programs = []
+    import os
+    for extns in extension[0]:
+        if os.path.isdir(directory):
+            for filename in os.listdir(directory):
+                if filename.lower().endswith(extns):
+                    programs.append(filename)
+        else:
+            print("Invalid directory path")
+    return programs
+
+listOfChromeDrivers = fileList(".\\Drivers\\", [".exe"])
+for x in listOfChromeDrivers:
+    print(x)

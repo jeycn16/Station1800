@@ -5,23 +5,51 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 import time
+import os
+
+def fileList(directory, *extension):
+    """
+    This program takes a directory path as input, then returns a list with all the files inside that folder
+    that end with the extensions provided
+    """
+    programs = []
+
+    for extns in extension[0]:
+        if os.path.isdir(directory):
+            for filename in os.listdir(directory):
+                if filename.lower().endswith(extns):
+                    programs.append(filename)
+        else:
+            print("Invalid directory path")
+    return programs
 
 
 def LaunchBrowser():
     # For testing
     # MESWebSite = "http://fit-wcapp-01.subzero.com:8000/EnterpriseConsole/BPMUITemplates/Default/Repository/Site/CustomLogin.aspx?ListItemId=e0a7e9d4-02f2-4c6d-898c-8714b73c8c08&FormLink=NGDF%20Station%209050"
 
-
+    driver = None
     MESWebSite = "http://FIT-WCAPP-01.subzero.com:8000/EnterpriseConsole/BPMUITemplates/Default/Repository/Site/CustomLogin.aspx?ListItemId=E0A7E9D4-02F2-4C6D-898C-8714B73C8C08&FormLink=NGDF%20Station%201800"
     # import Chrome web driver
-    path = ".\\Drivers\\chromedriver.exe"
-    driver = webdriver.Chrome(path)
-    # driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
-    driver.get(MESWebSite)
+    try:
+        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver.get(MESWebSite)
+        return driver
+    except:
 
-    return driver
+        listOfChromeDrivers = fileList(".\\Drivers\\", [".exe"])
+
+        for x in listOfChromeDrivers:
+            try:
+                driver = webdriver.Chrome(x)
+                driver.get(MESWebSite)
+                return driver
+            except:
+                pass
+        print("None of the drivers worked")
+
 
 
 # def logIntoMES(driver, user):
