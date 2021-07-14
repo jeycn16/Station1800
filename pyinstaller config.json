@@ -72,6 +72,10 @@
   {
    "optionDest": "datas",
    "value": "C:/_Code/Station1800/LabViewIntegrationKiller.exe;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/_Code/Station1800/Stored values.txt;."
   }
  ],
  "nonPyinstallerOptions": {
