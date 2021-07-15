@@ -57,6 +57,20 @@ class driver:
 #
 #     return os.path.join(base_path, relative_path)
 
+
+import win32gui
+def windowEnumerationHandler(hwnd, top_windows):
+    top_windows.append((hwnd, win32gui.GetWindowText(hwnd)))
+
+def RiseGUI(GUIName):
+    top_windows = []
+    win32gui.EnumWindows(windowEnumerationHandler, top_windows)
+    for i in top_windows:
+        if GUIName in i[1].lower():
+            win32gui.ShowWindow(i[0],5)
+            win32gui.SetForegroundWindow(i[0])
+            break
+
 def resource_path(relative):
     return os.path.join(os.environ.get("_MEIPASS2", os.path.abspath(".")), relative)
 
@@ -92,7 +106,8 @@ def login(nextFrame, selfInputField, nextInputField):
         ClearField(inputField.MDL2)
 
         raise_frame(nextFrame, nextInputField)
-        BringGUI2Front(nextFrame, nextInputField)
+        RiseGUI("Station1800")
+        # BringGUI2Front(nextFrame, nextInputField)
 
 
     else:
@@ -252,11 +267,13 @@ def doMacro():
 
     print("Start MES integration")
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
-    # driver.driver = MESCheckTest(data, driver.driver)            # Call driver and input data
+    # driver.driver = MESCheckTest(data, driver.driver)     # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
-    inputField.MDL2["state"] = "disabled"
-                               # Disable MDL2 input field
+    inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
     inputField.Serial.focus_set()                           # Set focus on serial input field
+
+    # BringGUI2Front(scanFrame, inputField.Serial)            # Bring GUI to front again
+    RiseGUI("Station1800")                                  # Bring GUI to front again
 
     workingTime.lastScan = time.perf_counter()              # Taking time after each unit done
 
@@ -266,7 +283,7 @@ def doMacro():
 
 
 def GUI():
-    global loginFrame
+    global loginFrame, scanFrame
     """
     This is the user interface. It contains only the buttons and entry boxes that the user can interact with
     """
