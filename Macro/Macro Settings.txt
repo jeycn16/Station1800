@@ -4,5 +4,5 @@
 2
 0.3
 0.7
-0.7
+0.9
 %SCRIPT_DIR%\Macro image files\Fail.jpg
