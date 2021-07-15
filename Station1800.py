@@ -10,10 +10,7 @@ from MESintegration import MESLogout
 import time
 
 
-# TODO
-# bring Gui to forefront after logging in and after macro
-
-# Define classes
+# TODO ICB don't get pumas. clear input fields
 
 
 
@@ -97,7 +94,6 @@ def login(nextFrame, selfInputField, nextInputField):
         ClearField(inputField.MDL2)
 
         raise_frame(nextFrame, nextInputField)
-        RiseGUI()
         # BringGUI2Front(nextFrame, nextInputField)
 
 
@@ -105,6 +101,8 @@ def login(nextFrame, selfInputField, nextInputField):
         displayError("Invalid ID")
         # Clear entry field
         ClearField(selfInputField)
+
+    BringGUI2Front(loginFrame, nextInputField)
 
 
 def Logout(nextFrame):
@@ -185,6 +183,12 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
             if unitSize.startswith("DF") or unitSize.startswith("IR"):
                 try:
                     unitSize = int(unitSize[2:4])
+                except:
+                    displayError("Problems finding the unit size in serial")
+                    ClearField(selfEntry)                       # Clear entry field
+            elif unitSize.startswith("ICBDF") or unitSize.startswith("ICBIR"):
+                try:
+                    unitSize = int(unitSize[5:7])
                 except:
                     displayError("Problems finding the unit size in serial")
                     ClearField(selfEntry)                       # Clear entry field
