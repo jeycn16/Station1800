@@ -58,18 +58,9 @@ class driver:
 #     return os.path.join(base_path, relative_path)
 
 
-import win32gui
-def windowEnumerationHandler(hwnd, top_windows):
-    top_windows.append((hwnd, win32gui.GetWindowText(hwnd)))
+def RiseGUI():
+    subprocess.call([".\\Macro\\bringGUI2Front.exe"])
 
-def RiseGUI(GUIName):
-    top_windows = []
-    win32gui.EnumWindows(windowEnumerationHandler, top_windows)
-    for i in top_windows:
-        if GUIName in i[1].lower():
-            win32gui.ShowWindow(i[0],5)
-            win32gui.SetForegroundWindow(i[0])
-            break
 
 def resource_path(relative):
     return os.path.join(os.environ.get("_MEIPASS2", os.path.abspath(".")), relative)
@@ -106,7 +97,7 @@ def login(nextFrame, selfInputField, nextInputField):
         ClearField(inputField.MDL2)
 
         raise_frame(nextFrame, nextInputField)
-        RiseGUI("Station1800")
+        RiseGUI()
         # BringGUI2Front(nextFrame, nextInputField)
 
 
@@ -273,7 +264,7 @@ def doMacro():
     inputField.Serial.focus_set()                           # Set focus on serial input field
 
     # BringGUI2Front(scanFrame, inputField.Serial)            # Bring GUI to front again
-    RiseGUI("Station1800")                                  # Bring GUI to front again
+    RiseGUI()                                  # Bring GUI to front again
 
     workingTime.lastScan = time.perf_counter()              # Taking time after each unit done
 
@@ -284,13 +275,14 @@ def doMacro():
 
 def GUI():
     global loginFrame, scanFrame
+    # WindowTitle = "Macro for Station 1800, by Jeyc"
     """
     This is the user interface. It contains only the buttons and entry boxes that the user can interact with
     """
     # Define window parameters
     window = Tk()
     # window.attributes('-topmost', True)
-    window.title("Station 1800 Scanning")
+    window.title("Macro for Station 1800, by Jeyc")
     # window.geometry('626x403')
     window.resizable(width=False, height=False)
 
@@ -428,6 +420,7 @@ if __name__ == "__main__":
         os.mkdir(HiddenFolder)
         # This makes the folder invisible
         subprocess.check_call(["attrib", "+H", HiddenFolder])
+
 
 
     # Execute GUI
