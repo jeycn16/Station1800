@@ -86,7 +86,7 @@ def login(nextFrame, selfInputField, nextInputField):
     """
     data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
-        driver.driver = MESLogIn(data)                                                                                # MES Integration
+        # driver.driver = MESLogIn(data)                                                                                # MES Integration
         workingTime.clockIn = time.perf_counter()
         ClearField(inputField.Serial)
         ClearField(inputField.Puma)
@@ -135,7 +135,7 @@ def clearUnitEntryFields():
     data.MDL2 = ""
 
 
-def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
+def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None, puma_entry = None):
     """
     This function switches the focus from one entry box to the next
 
@@ -180,29 +180,30 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
 
         if "$" in serialNum:
             unitSize = serialNum.split("$")[3]  #slicing through serial number to just the model code "DF48...."
-            if unitSize.startswith("DF") or unitSize.startswith("IR"):
-                try:
-                    unitSize = int(unitSize[2:4])
-                except:
-                    displayError("Problems finding the unit size in serial")
-                    ClearField(selfEntry)                       # Clear entry field
-            elif unitSize.startswith("ICBDF") or unitSize.startswith("ICBIR"):
-                try:
-                    unitSize = int(unitSize[5:7])
-                except:
-                    displayError("Problems finding the unit size in serial")
-                    ClearField(selfEntry)                       # Clear entry field
+            if unitSize.startswith("ICB"):
+                unitSize = int(unitSize[5:7])
             else:
-                displayError("Problems finding the unit type in serial")
-                ClearField(selfEntry)                           # Clear entry field
+                if unitSize.startswith("DF") or unitSize.startswith("IR"):
+                    try:
+                        unitSize = int(unitSize[2:4])
+                    except:
+                        displayError("Problems finding the unit size in serial")
+                        ClearField(selfEntry)                       # Clear entry field
+                else:
+                    displayError("Problems finding the unit type in serial")
+                    ClearField(selfEntry)                           # Clear entry field
         else:
             displayError("Serial string could not be parsed")
             ClearField(selfEntry)                               # Clear entry field
 
-        data.unitSize = unitSize                                # Save unit size
+        data.unitSize = unitSize # Save unit size
+
 
         if data.unitSize == 48 or data.unitSize == 60:      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
             MDL2_entry['state'] = "normal"
+
+        if "ICB" not in serialNum:
+            puma_entry["state"] = "normal"
 
     elif attribute == "puma":
         data.puma = selfEntry.get()
@@ -216,10 +217,12 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
     else:
         print("Error\nBad entry field")
 
-    if nextEntry != None:                                       # If a next entry field is provided, switch focus to that field
-        nextEntry.focus_set()
-    else:                                                       # If a next entry field is not provided, it's because we reached the final entry field
-        doMacro()                                               # execute macro
+    if "ICB" in data.serialNumber:
+        if nextEntry == inputField.Puma:
+            inputField.MDL1.focus_set()
+
+        elif nextEntry == None:                                                       # If a next entry field is not provided, it's because we reached the final entry field
+            doMacro()                                               # execute macro
 
     if attribute == "MDL1":                                     # If we're scanning MDL1, go to next entry field (MDL2) if unit requires it.
         if (data.unitSize == 48 or data.unitSize == 60):
@@ -361,7 +364,7 @@ def GUI():
     inputField.Serial = Entry(scanFrame, width=25, bg="white", font=('times','10'))
     inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     # inputField.Serial.focus_set()
-    inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial , "serialNumber", inputField.Puma, inputField.MDL2))
+    inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial, "serialNumber", inputField.Puma, inputField.MDL2, inputField.Puma))
     f2_iniRow += 1
     f2_iniCol = 0
 
@@ -373,6 +376,7 @@ def GUI():
     inputField.Puma = Entry(scanFrame, width=25, bg="white")
     inputField.Puma.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.Puma.bind('<Return>', lambda event: GoToNextEntry(inputField.Puma, "puma", inputField.MDL1))
+    inputField.Puma["state"] = "disabled"
     f2_iniRow += 1
     f2_iniCol = 0
 
