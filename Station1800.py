@@ -322,7 +322,7 @@ def GUI():
     # icon_Path = resource_path(".\\Media\\SmartGuy_Ico.ico")
     window.iconbitmap(icon_Path)
 
-    backgroungImage_Path = ".\\Media\\Wolf Logo.jpg"
+    backgroungImage_Path = ".\\Media\\background.jpg"            # ".\\Media\\Wolf Logo.jpg"
     # backgroungImage_Path = resource_path(".\\Media\\Wolf Logo.jpg")
     backgroungImage = ImageTk.PhotoImage(Image.open(backgroungImage_Path))
 
@@ -345,24 +345,29 @@ def GUI():
 
     wolfLogo = Label(loginFrame, image=backgroungImage)
     # wolfLogo = Label(loginFrame, bg="black")
-    wolfLogo.grid(row=f1_iniRow, column=f1_iniCol, sticky='w')
-    f1_iniRow += 1
+    wolfLogo.pack()
+    # wolfLogo.grid(row=f1_iniRow, column=f1_iniCol, sticky='w')
+    # f1_iniRow += 1
 
     text1 = Label(loginFrame, text="Welcome", fg="black", font=('times','35', 'bold'))
-    text1.grid(row=f1_iniRow, column=f1_iniCol)
-    f1_iniRow += 1
+    text1.place(relx=0.5, rely=0.2, anchor="center")
+    # text1.grid(row=f1_iniRow, column=f1_iniCol)
+    # f1_iniRow += 1
 
     text2 = Label(loginFrame, text="Scan your ID:", fg="black", font=('times','25'))
-    text2.grid(row=f1_iniRow, column=f1_iniCol)
-    f1_iniRow += 1
+    text2.place(relx=0.5, rely=0.4, anchor="center")
+    # text2.grid(row=f1_iniRow, column=f1_iniCol)
+    # f1_iniRow += 1
 
     inputField.Badge = Entry(loginFrame, width=10, bg="white", font=('times','25'), justify='center')
-    inputField.Badge.grid(row=f1_iniRow, column=f1_iniCol, ipady=10)
+    inputField.Badge.place(relx=0.5, rely=0.7, anchor="center")
+    # inputField.Badge.grid(row=f1_iniRow, column=f1_iniCol, ipady=10)
     inputField.Badge.focus_set()
-    f1_iniRow += 1
+    # f1_iniRow += 1
 
     logIn_Bttn = Button(loginFrame, text="Log in", command=lambda: login(scanFrame, inputField.Badge, inputField.Serial), bg="gray", font=('times','15'), relief=RAISED, borderwidth=5)
-    logIn_Bttn.grid(row=f1_iniRow, column=f1_iniCol, pady=8, sticky='s')
+    logIn_Bttn.place(relx=0.5, rely=0.9, anchor="center")
+    # logIn_Bttn.grid(row=f1_iniRow, column=f1_iniCol, pady=8, sticky='s')
     inputField.Badge.bind('<Return>', lambda event: login(scanFrame, inputField.Badge, inputField.Serial))
 
 
@@ -376,65 +381,82 @@ def GUI():
     ###   Contains the screen where operator has to scan the serial number, puma, MDL 1, and MDL2 (if required)     ###
     ###                                                                                                             ###
     ###################################################################################################################
+
     f2_iniRow = 0
     f2_iniCol = 0
     f2_padx = 10
     f2_pady = 10
 
-    text3 =Label(scanFrame, text= "Scan pallet label:", fg="black", font=('times','25'))
-    text3.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
-    f2_iniCol += 1
+    text_Relx = 0.4
+    IF_Relx = 0.45
+    _rely = 0.1
+
+    wolfLogo = Label(scanFrame, image=backgroungImage)
+    wolfLogo.pack()
+
+    text3 =Label(scanFrame, text= "Scan pallet label:", fg="white", bg="#011F67", font=('times','25'))
+    text3.place(relx=text_Relx, rely=_rely, anchor="e")
+    # text3.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
+    # f2_iniCol += 1
 
 
-    inputField.Serial = Entry(scanFrame, width=25, bg="white", font=('times','10'))
-    inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
-    # inputField.Serial.focus_set()
+    inputField.Serial = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
+    inputField.Serial.place(relx=IF_Relx, rely=_rely, anchor="w")
+    # inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial, "serialNumber", inputField.Puma, inputField.MDL2))
     f2_iniRow += 1
     f2_iniCol = 0
 
 
-    text4 = Label(scanFrame, text= "Scan Puma:", fg="black", font=('times','25'))
-    text4.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
+    text4 = Label(scanFrame, text= "Scan Puma:", fg="white", bg="#004694", font=('times','25'), justify="right")
+    text4.place(relx=text_Relx, rely=_rely*3, anchor="e")
+    # text4.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.Puma = Entry(scanFrame, width=25, bg="white")
-    inputField.Puma.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    inputField.Puma = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
+    inputField.Puma.place(relx=IF_Relx, rely=_rely * 3, anchor="w")
+    # inputField.Puma.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.Puma.bind('<Return>', lambda event: GoToNextEntry(inputField.Puma, "puma", inputField.MDL1))
     inputField.Puma["state"] = "disabled"
     f2_iniRow += 1
     f2_iniCol = 0
 
-    text5 = Label(scanFrame, text= "Scan MDL:", fg="black", font=('times','25'))
-    text5.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
+    text5 = Label(scanFrame, text= "Scan MDL:", fg="white", bg="#0472A3", font=('times','25'), justify="right")
+    text5.place(relx=text_Relx, rely=_rely*5, anchor="e")
+    # text5.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.MDL1 = Entry(scanFrame, width=25, bg="white")
-    inputField.MDL1.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    inputField.MDL1 = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
+    inputField.MDL1.place(relx=IF_Relx, rely=_rely*5, anchor="w")
+    # inputField.MDL1.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL1.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL1, "MDL1", inputField.MDL2))
     f2_iniRow += 1
     f2_iniCol = 0
 
-    text6 = Label(scanFrame, text="Scan MDL:", fg="black", font=('times', '25'))
-    text6.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
+    text6 = Label(scanFrame, text="Scan MDL:", fg="white", bg="#2099C6", font=('times', '25'), justify="right")
+    text6.place(relx=text_Relx, rely=_rely*7, anchor="e")
+    # text6.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.MDL2 = Entry(scanFrame, width=25, bg="white")
-    inputField.MDL2.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    inputField.MDL2 = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
+    inputField.MDL2.place(relx=IF_Relx, rely=_rely * 7, anchor="w")
+    # inputField.MDL2.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL2.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL2, "MDL2"))
     inputField.MDL2["state"] = "disabled"
     f2_iniRow += 1
     f2_iniCol = 0
 
-    logOut_Bttn = Button(scanFrame, text="Log out", command=lambda: Logout(loginFrame), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
-    logOut_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    logOut_Bttn = Button(scanFrame, text="Log out", command=lambda: Logout(loginFrame), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    logOut_Bttn.place(relx=0.3, rely=_rely*9, anchor="center")
+    # logOut_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    Submit_Bttn = Button(scanFrame, text="Submit", command=lambda: submit(), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
-    Submit_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    Submit_Bttn = Button(scanFrame, text="Submit", command=lambda: submit(), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    Submit_Bttn.place(relx=0.7, rely=_rely*9, anchor="center")
+    # Submit_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
 
 
-    # raise_frame(scanFrame)
+    # raise_frame(scanFrame,inputField.Serial)
 
     window.mainloop()
 
