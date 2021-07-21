@@ -20,13 +20,14 @@ class _time:
         self.lastScan = lastScan
 
 class data:
-    def __init__(self, badge, serialNumber, puma, MDL1, MDL2, unitSize):
+    def __init__(self, badge, serialNumber, puma, MDL1, MDL2, unitSize, unitType):
         self.badge = badge
         self.serialNumber = serialNumber
         self.puma = puma
         self.MDL1 = MDL1
         self.MDL2 = MDL2
         self.unitSize = unitSize
+        self.unitType = unitType
 
 
 class inputField:
@@ -102,7 +103,8 @@ def login(nextFrame, selfInputField, nextInputField):
         # Clear entry field
         ClearField(selfInputField)
 
-    BringGUI2Front(loginFrame, nextInputField)
+    raise_frame(nextFrame, nextInputField)
+    # BringGUI2Front(loginFrame, nextInputField)
 
 
 def Logout(nextFrame):
@@ -133,9 +135,11 @@ def clearUnitEntryFields():
     data.puma = ""
     data.MDL1 = ""
     data.MDL2 = ""
+    data.unitSize = ""
+    data.unitType = ""
 
 
-def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None, puma_entry = None):
+def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
     """
     This function switches the focus from one entry box to the next
 
@@ -178,23 +182,29 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None, puma_en
         serialNum = data.serialNumber
         unitSize = ""
 
-        if "$" in serialNum:
+        try:
             unitSize = serialNum.split("$")[3]  #slicing through serial number to just the model code "DF48...."
-            if unitSize.startswith("ICB"):
-                unitSize = int(unitSize[5:7])
+            if unitSize.startswith("ICBDF") or unitSize.startswith("ICBIR"):
+                try:
+                    data.unitType = unitSize[0:5]
+                    unitSize = int(unitSize[5:7])
+                except:
+                    displayError("Problems finding the unit size in ICB unit")
+                    ClearField(selfEntry)  # Clear entry field
+            elif unitSize.startswith("DF") or unitSize.startswith("IR"):
+                try:
+                    data.unitType = unitSize[0:2]
+                    unitSize = int(unitSize[2:4])
+                except:
+                    displayError("Problems finding the unit size in regular")
+                    ClearField(selfEntry)                       # Clear entry field
             else:
-                if unitSize.startswith("DF") or unitSize.startswith("IR"):
-                    try:
-                        unitSize = int(unitSize[2:4])
-                    except:
-                        displayError("Problems finding the unit size in serial")
-                        ClearField(selfEntry)                       # Clear entry field
-                else:
-                    displayError("Problems finding the unit type in serial")
-                    ClearField(selfEntry)                           # Clear entry field
-        else:
+                displayError("Problems finding the unit type in serial")
+                ClearField(selfEntry)                           # Clear entry field
+        except:
             displayError("Serial string could not be parsed")
             ClearField(selfEntry)                               # Clear entry field
+            selfEntry.focus_set()
 
         data.unitSize = unitSize # Save unit size
 
@@ -202,8 +212,8 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None, puma_en
         if data.unitSize == 48 or data.unitSize == 60:      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
             MDL2_entry['state'] = "normal"
 
-        if "ICB" not in serialNum:
-            puma_entry["state"] = "normal"
+        if data.unitType == "DF" or data.unitType == "IR":
+            inputField.Puma["state"] = "normal"
 
     elif attribute == "puma":
         data.puma = selfEntry.get()
@@ -217,12 +227,16 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None, puma_en
     else:
         print("Error\nBad entry field")
 
-    if "ICB" in data.serialNumber:
-        if nextEntry == inputField.Puma:
-            inputField.MDL1.focus_set()
+    if nextEntry == None:
+        doMacro()
+    else:
+        nextEntry.focus_set()
 
-        elif nextEntry == None:                                                       # If a next entry field is not provided, it's because we reached the final entry field
-            doMacro()                                               # execute macro
+    if (data.unitType == "ICBDF" or data.unitType == "ICBIR") and nextEntry == inputField.Puma:
+        inputField.MDL1.focus_set()
+
+        # elif nextEntry == None:                                                       # If a next entry field is not provided, it's because we reached the final entry field
+        #     doMacro()                                               # execute macro
 
     if attribute == "MDL1":                                     # If we're scanning MDL1, go to next entry field (MDL2) if unit requires it.
         if (data.unitSize == 48 or data.unitSize == 60):
@@ -231,11 +245,18 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None, puma_en
             doMacro()
 
 
+
 def submit():
     data.serialNumber = inputField.Serial.get()
-    data.puma = inputField.Puma.get()
+    try:
+        data.puma = inputField.Puma.get()
+    except:
+        pass
     data.MDL1 = inputField.MDL1.get()
-    data.MDL2 = inputField.MDL2.get()
+    try:
+        data.MDL2 = inputField.MDL2.get()
+    except:
+        pass
     doMacro()
 
 
@@ -251,6 +272,7 @@ def doMacro():
         outfile.write(data.puma + "\n")
         outfile.write(data.MDL1 + "\n")
         outfile.write(data.MDL2 + "\n")
+        outfile.write(data.unitType + "\n")
 
 
     # Put path to the txt file in ram memory
@@ -260,18 +282,33 @@ def doMacro():
     time.sleep(5)
     print("Start LabViewIntegration")
     # Call a macro to start the test
-    subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
 
 
+
+
+
+    # subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
     print("Start MES integration")
-    driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
+    # driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
+
+
+
+
     # driver.driver = MESCheckTest(data, driver.driver)     # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
     inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
+    inputField.Puma["state"] = "disabled"                   # Disable Puma input field
     inputField.Serial.focus_set()                           # Set focus on serial input field
 
     # BringGUI2Front(scanFrame, inputField.Serial)            # Bring GUI to front again
-    RiseGUI()                                  # Bring GUI to front again
+
+
+
+    # RiseGUI()                                  # Bring GUI to front again
+
+
+
+
 
     workingTime.lastScan = time.perf_counter()              # Taking time after each unit done
 
@@ -364,7 +401,7 @@ def GUI():
     inputField.Serial = Entry(scanFrame, width=25, bg="white", font=('times','10'))
     inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     # inputField.Serial.focus_set()
-    inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial, "serialNumber", inputField.Puma, inputField.MDL2, inputField.Puma))
+    inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial, "serialNumber", inputField.Puma, inputField.MDL2))
     f2_iniRow += 1
     f2_iniCol = 0
 
@@ -416,7 +453,7 @@ def GUI():
 
 if __name__ == "__main__":
     # Initialize variables
-    data = data("","","","","","")
+    data = data("","","","","","","")
     inputField = inputField(None, None, None, None, None)
     driver = driver(None)
     workingTime = _time(0, 0)
