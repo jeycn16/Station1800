@@ -8,6 +8,7 @@ from MESintegration import MESLogIn
 from MESintegration import MESWork
 from MESintegration import MESLogout
 import time
+import configparser
 
 
 # TODO ICB don't get pumas. clear input fields
@@ -45,17 +46,6 @@ class driver:
 
 # Define functions
 
-# def resource_path(relative_path):
-#     """ Get absolute path to resource, works for dev and for PyInstaller """
-#     try:
-#         # PyInstaller creates a temp folder and stores path in _MEIPASS
-#         base_path = sys._MEIPASS
-#     except Exception:
-#         base_path = os.path.abspath(".")
-#
-#     return os.path.join(base_path, relative_path)
-
-
 def RiseGUI():
     subprocess.call([".\\Macro\\bringGUI2Front.exe"])
 
@@ -87,7 +77,7 @@ def login(nextFrame, selfInputField, nextInputField):
     """
     data.badge = selfInputField.get()
     if data.badge.isdigit() and len(data.badge) <= 6 and len(data.badge) >= 4:
-        # driver.driver = MESLogIn(data)                                                                                # MES Integration
+        driver.driver = MESLogIn(data)                                                                                # MES Integration
         workingTime.clockIn = time.perf_counter()
         ClearField(inputField.Serial)
         ClearField(inputField.Puma)
@@ -235,9 +225,6 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
     if (data.unitType == "ICBDF" or data.unitType == "ICBIR") and nextEntry == inputField.Puma:
         inputField.MDL1.focus_set()
 
-        # elif nextEntry == None:                                                       # If a next entry field is not provided, it's because we reached the final entry field
-        #     doMacro()                                               # execute macro
-
     if attribute == "MDL1":                                     # If we're scanning MDL1, go to next entry field (MDL2) if unit requires it.
         if (data.unitSize == 48 or data.unitSize == 60):
             nextEntry.focus_set()
@@ -267,12 +254,13 @@ def doMacro():
     sotredValues_Path = os.path.join(HiddenFolder, "Stored values.txt")
     with open(sotredValues_Path, 'w') as outfile:
         outfile.write(str(data.badge) + "\n")
-        outfile.write(data.serialNumber + "\n")
         outfile.write(str(data.unitSize) + "\n")
+        outfile.write(data.unitType + "\n")
+        outfile.write(data.serialNumber + "\n")
         outfile.write(data.puma + "\n")
         outfile.write(data.MDL1 + "\n")
         outfile.write(data.MDL2 + "\n")
-        outfile.write(data.unitType + "\n")
+
 
 
     # Put path to the txt file in ram memory
@@ -287,9 +275,9 @@ def doMacro():
 
 
 
-    # subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
+    subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
     print("Start MES integration")
-    # driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
+    driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
 
 
 
@@ -304,7 +292,7 @@ def doMacro():
 
 
 
-    # RiseGUI()                                  # Bring GUI to front again
+    RiseGUI()                                  # Bring GUI to front again
 
 
 
@@ -466,6 +454,32 @@ if __name__ == "__main__":
         # This makes the folder invisible
         subprocess.check_call(["attrib", "+H", HiddenFolder])
 
+    # Create the settings file that the macro will use for the LabViewIntegration
+    macroSettings_Path = ".\\Macro\\Macro Settings.ini"
+    if not os.path.isfile(macroSettings_Path):
+
+        # Create settings file
+        macroSettings = configparser.ConfigParser()
+
+        # ImagePaths
+        macroSettings["ImagePaths"] =   {
+                                        "runButton": "%%SCRIPT_DIR%%\Macro image files\RunButton.jpg",
+                                        "greenCheckButton": "%%SCRIPT_DIR%%\Macro image files\GreenCheckButton.jpg"
+                                        }
+
+        # ImageTolerances
+        macroSettings["ImageTolerances"] = {}
+        macroSettings["ImageTolerances"]["runButtonTolerance"] = "0.7"
+        macroSettings["ImageTolerances"]["greenCheckButtonTolerance"] = "0.7"
+
+        # Miscellaneous
+        macroSettings["Miscellaneous"] = {}
+        macroSettings["Miscellaneous"]["waitMultiplier"] = "1"
+        macroSettings["Miscellaneous"]["testFinishedKeyWord"] = "Test Complete..."
+
+        # save to a file
+        with open(macroSettings_Path, 'w') as configfile:
+            macroSettings.write(configfile)
 
 
     # Execute GUI
