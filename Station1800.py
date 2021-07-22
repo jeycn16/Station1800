@@ -63,11 +63,11 @@ def raise_frame(frame, inputField):
     inputField.focus_set()
 
 
-def displayError(message):
+def displayError(errorID, message):
     """
     Displays an Error box with the desired message in it
     """
-    messagebox.showerror("Error", message)
+    messagebox.showerror("Error", "Error: " + str(errorID) + "\n" + message)
 
 
 def login(selfFrame, nextFrame, selfInputField, nextInputField):
@@ -90,7 +90,7 @@ def login(selfFrame, nextFrame, selfInputField, nextInputField):
 
 
     else:
-        displayError("Invalid ID")
+        displayError(1, "Invalid ID")
         # Clear entry field
         ClearField(selfInputField)
         raise_frame(selfFrame, selfInputField)
@@ -174,22 +174,26 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
                     data.unitType = unitSize[0:5]
                     unitSize = int(unitSize[5:7])
                 except:
-                    displayError("Problems finding the unit size in ICB unit")
+                    displayError(2, "Problems finding the unit size in ICB unit")
                     ClearField(selfEntry)  # Clear entry field
+                    raise_frame(scanFrame, selfEntry)
             elif unitSize.startswith("DF") or unitSize.startswith("IR"):
                 try:
                     data.unitType = unitSize[0:2]
                     unitSize = int(unitSize[2:4])
                 except:
-                    displayError("Problems finding the unit size in regular")
+                    displayError(3, "Problems finding the unit size in regular")
                     ClearField(selfEntry)                       # Clear entry field
+                    raise_frame(scanFrame, selfEntry)
             else:
-                displayError("Problems finding the unit type in serial")
+                displayError(4, "Problems finding the unit type in serial")
                 ClearField(selfEntry)                           # Clear entry field
+                ClearField(selfEntry)  # Clear entry field
+                raise_frame(scanFrame, selfEntry)
         except:
-            displayError("Serial string could not be parsed")
+            displayError(5, "Serial string could not be parsed")
             ClearField(selfEntry)                               # Clear entry field
-            selfEntry.focus_set()
+            raise_frame(scanFrame, selfEntry)
 
         data.unitSize = unitSize # Save unit size
 
@@ -202,6 +206,11 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
 
     elif attribute == "puma":
         data.puma = selfEntry.get()
+        if not data.puma.startswith("9041664"):
+            displayError(6, "Puma serial number not recognized")
+            ClearField(selfEntry)  # Clear entry field
+            raise_frame(scanFrame, selfEntry)
+
 
     elif attribute == "MDL1":
         data.MDL1 = selfEntry.get()
