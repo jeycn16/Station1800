@@ -46,44 +46,43 @@
 #     print(x)
 
 
-import win32gui
-def windowEnumerationHandler(hwnd, top_windows):
-    top_windows.append((hwnd, win32gui.GetWindowText(hwnd)))
+# semi-transparent-stipple-demo.py
+# note: stipple only works for some objects (like rectangles)
+# and not others (like ovals).  But it's better than nothing...
 
-def RiseGUI(GUIName):
-    top_windows = []
-    win32gui.EnumWindows(windowEnumerationHandler, top_windows)
-    for i in top_windows:
-        if GUIName in i[1].lower():
-            win32gui.ShowWindow(i[0],5)
-            win32gui.SetForegroundWindow(i[0])
-            break
+from tkinter import *
 
-"""import win32gui
-def windowEnumerationHandler(hwnd, top_windows):
-    top_windows.append((hwnd, win32gui.GetWindowText(hwnd)))
+def redrawAll(canvas):
+    canvas.delete(ALL)
+    # draw a red rectangle on the left half
+    canvas.create_rectangle(0, 0, 250, 600, fill="red")
+    # draw semi-transparent rectangles in the middle
+    canvas.create_rectangle(200,  75, 300, 125, fill="blue", stipple="")
+    canvas.create_rectangle(200, 175, 300, 225, fill="blue", stipple="gray75")
+    canvas.create_rectangle(200, 275, 300, 325, fill="blue", stipple="gray50")
+    canvas.create_rectangle(200, 375, 300, 425, fill="blue", stipple="gray25")
+    canvas.create_rectangle(200, 475, 300, 525, fill="gray", stipple="gray12")
 
-def RiseGUI(GUIName):
-    top_windows = []
-    win32gui.EnumWindows(windowEnumerationHandler, top_windows)
-    for i in top_windows:
-        if GUIName in i[1].lower():
-            win32gui.ShowWindow(i[0],5)
-            win32gui.SetForegroundWindow(i[0])
-            break"""
+def init(canvas):
+    redrawAll(canvas)
 
+########### copy-paste below here ###########
 
-"""from pywinauto.findwindows    import find_window
-from win32gui import SetForegroundWindow
-def RiseGUI(GUIName):
-    SetForegroundWindow(find_window(title=GUIName))"""
+def run():
+    # create the root and the canvas
+    root = Tk()
+    canvas = Canvas(root, width=500, height=600)
+    canvas.pack()
+    # Store canvas in root and in canvas itself for callbacks
+    root.canvas = canvas.canvas = canvas
+    # Set up canvas data and call init
+    canvas.data = { }
+    init(canvas)
+    # set up events
+    # root.bind("<Button-1>", mousePressed)
+    # root.bind("<Key>", keyPressed)
+    # timerFired(canvas)
+    # and launch the app
+    root.mainloop()  # This call BLOCKS (so your program waits until you close the window!)
 
-
-from pywinauto.findwindows    import find_window
-from win32gui import SetForegroundWindow
-# from pywinauto.win32functions import SetForegroundWindow
-
-if __name__ == "__main__":
-    # RiseGUI("Station1800")
-
-    SetForegroundWindow(find_window(title='Spotify.exe'))
+run()

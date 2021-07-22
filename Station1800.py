@@ -11,10 +11,6 @@ import time
 import configparser
 
 
-# TODO ICB don't get pumas. clear input fields
-
-
-
 class _time:
     def __init__(self, clockIn, lastScan):
         self.clockIn = clockIn
@@ -30,7 +26,6 @@ class data:
         self.unitSize = unitSize
         self.unitType = unitType
 
-
 class inputField:
     def __init__(self, Badge, Serial, Puma, MDL1, MDL2):
         self.Badge = Badge
@@ -44,20 +39,27 @@ class driver:
         self.driver = driver
 
 
-# Define functions
+###################################################################################################################
+###                                                                                                             ###
+###                                       GENERA FUNCTIONS                                                      ###
+###                                                                                                             ###
+###################################################################################################################
 
 def RiseGUI():
     subprocess.call([".\\Macro\\bringGUI2Front.exe"])
 
 
-def resource_path(relative):
-    return os.path.join(os.environ.get("_MEIPASS2", os.path.abspath(".")), relative)
+"""def BringGUI2Front(frame, nextInputField):
+    frame.focus_force()
+    nextInputField.focus_set()"""
+
 
 def raise_frame(frame, inputField):
     """
     Moves frame to the top of the GUI, sets focus on the indicated input field
     """
     frame.tkraise()
+    frame.focus_force()
     inputField.focus_set()
 
 
@@ -68,7 +70,7 @@ def displayError(message):
     messagebox.showerror("Error", message)
 
 
-def login(nextFrame, selfInputField, nextInputField):
+def login(selfFrame, nextFrame, selfInputField, nextInputField):
     """
     Saves the badge number to data.badge and displays the next frame of the GUI, setting the focus on the next input
     field (serial number input field).
@@ -85,27 +87,19 @@ def login(nextFrame, selfInputField, nextInputField):
         ClearField(inputField.MDL2)
 
         raise_frame(nextFrame, nextInputField)
-        # BringGUI2Front(nextFrame, nextInputField)
 
 
     else:
         displayError("Invalid ID")
         # Clear entry field
         ClearField(selfInputField)
-
-    raise_frame(nextFrame, nextInputField)
-    # BringGUI2Front(loginFrame, nextInputField)
+        raise_frame(selfFrame, selfInputField)
 
 
 def Logout(nextFrame):
     MESLogout(driver.driver)
     ClearField(inputField.Badge)
     raise_frame(nextFrame, inputField.Badge)
-
-
-def BringGUI2Front(frame, nextInputField):
-    frame.focus_force()
-    nextInputField.focus_set()
 
 
 def ClearField(inputField):
@@ -115,9 +109,10 @@ def ClearField(inputField):
     inputField.delete(0,END)
 
 
-def clearUnitEntryFields():
+def clearUnitEntryFieldsAndWipeOutData():
     """
     Clears every input field in the second frame (serial number, puma, MDL1, MDL2)
+    Wipes out data
     """
     for entry in (inputField.Serial, inputField.Puma, inputField.MDL1, inputField.MDL2):
         ClearField(entry)
@@ -283,7 +278,7 @@ def doMacro():
 
 
     # driver.driver = MESCheckTest(data, driver.driver)     # Call driver and input data
-    clearUnitEntryFields()                                  # Clear entry fields and data stored
+    clearUnitEntryFieldsAndWipeOutData()                                  # Clear entry fields and data stored
     inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
     inputField.Puma["state"] = "disabled"                   # Disable Puma input field
     inputField.Serial.focus_set()                           # Set focus on serial input field
@@ -305,25 +300,29 @@ def doMacro():
         Logout(loginFrame)
 
 
+###################################################################################################################
+###                                                                                                             ###
+###                                    GRAPHICAL USER INTERFACE                                                 ###
+###                                                                                                             ###
+###################################################################################################################
+
+
 def GUI():
     global loginFrame, scanFrame
-    # WindowTitle = "Macro for Station 1800, by Jeyc"
     """
     This is the user interface. It contains only the buttons and entry boxes that the user can interact with
     """
+
     # Define window parameters
     window = Tk()
-    # window.attributes('-topmost', True)
     window.title("Macro for Station 1800, by Jeyc")
-    # window.geometry('626x403')
     window.resizable(width=False, height=False)
 
+
     icon_Path = ".\\Media\\SmartGuy_Ico.ico"
-    # icon_Path = resource_path(".\\Media\\SmartGuy_Ico.ico")
     window.iconbitmap(icon_Path)
 
-    backgroungImage_Path = ".\\Media\\background.jpg"            # ".\\Media\\Wolf Logo.jpg"
-    # backgroungImage_Path = resource_path(".\\Media\\Wolf Logo.jpg")
+    backgroungImage_Path = ".\\Media\\background.jpg"
     backgroungImage = ImageTk.PhotoImage(Image.open(backgroungImage_Path))
 
     # Place frames
@@ -340,39 +339,26 @@ def GUI():
     ###   Contains the initial screen where operator has to input his/her badge number so they can start            ###
     ###   scanning units                                                                                            ###
     ###################################################################################################################
-    f1_iniRow = 0
-    f1_iniCol = 0
+
 
     wolfLogo = Label(loginFrame, image=backgroungImage)
-    # wolfLogo = Label(loginFrame, bg="black")
     wolfLogo.pack()
-    # wolfLogo.grid(row=f1_iniRow, column=f1_iniCol, sticky='w')
-    # f1_iniRow += 1
 
-    text1 = Label(loginFrame, text="Welcome", fg="black", font=('times','35', 'bold'))
+    text1 = Label(loginFrame, text="Welcome", fg="white", bg="#012B7D", font=('times','35', 'bold'))
     text1.place(relx=0.5, rely=0.2, anchor="center")
-    # text1.grid(row=f1_iniRow, column=f1_iniCol)
-    # f1_iniRow += 1
 
-    text2 = Label(loginFrame, text="Scan your ID:", fg="black", font=('times','25'))
+    text2 = Label(loginFrame, text="Scan your ID:", fg="white", bg="#0071AB", font=('times','25'))
     text2.place(relx=0.5, rely=0.4, anchor="center")
-    # text2.grid(row=f1_iniRow, column=f1_iniCol)
-    # f1_iniRow += 1
 
-    inputField.Badge = Entry(loginFrame, width=10, bg="white", font=('times','25'), justify='center')
+    inputField.Badge = Entry(loginFrame, width=10, bg="white", borderwidth=5, font=('times','25'), justify='center')
     inputField.Badge.place(relx=0.5, rely=0.7, anchor="center")
-    # inputField.Badge.grid(row=f1_iniRow, column=f1_iniCol, ipady=10)
     inputField.Badge.focus_set()
-    # f1_iniRow += 1
 
-    logIn_Bttn = Button(loginFrame, text="Log in", command=lambda: login(scanFrame, inputField.Badge, inputField.Serial), bg="gray", font=('times','15'), relief=RAISED, borderwidth=5)
+    logIn_Bttn = Button(loginFrame, text="Log in", command=lambda: login(loginFrame, scanFrame, inputField.Badge, inputField.Serial), bg="light blue", font=('times','15'), relief=RAISED, borderwidth=5)
     logIn_Bttn.place(relx=0.5, rely=0.9, anchor="center")
-    # logIn_Bttn.grid(row=f1_iniRow, column=f1_iniCol, pady=8, sticky='s')
-    inputField.Badge.bind('<Return>', lambda event: login(scanFrame, inputField.Badge, inputField.Serial))
+    inputField.Badge.bind('<Return>', lambda event: login(loginFrame, scanFrame, inputField.Badge, inputField.Serial))
 
 
-    # Select Frame 1 as the initial frame
-    raise_frame(loginFrame, inputField.Badge)
 
     ###################################################################################################################
     ###                                                 FRAME 2                                                     ###
@@ -382,13 +368,9 @@ def GUI():
     ###                                                                                                             ###
     ###################################################################################################################
 
-    f2_iniRow = 0
-    f2_iniCol = 0
-    f2_padx = 10
-    f2_pady = 10
-
     text_Relx = 0.4
     IF_Relx = 0.45
+    image_Relx = 0.905
     _rely = 0.1
 
     wolfLogo = Label(scanFrame, image=backgroungImage)
@@ -396,66 +378,68 @@ def GUI():
 
     text3 =Label(scanFrame, text= "Scan pallet label:", fg="white", bg="#011F67", font=('times','25'))
     text3.place(relx=text_Relx, rely=_rely, anchor="e")
-    # text3.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
-    # f2_iniCol += 1
-
 
     inputField.Serial = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
     inputField.Serial.place(relx=IF_Relx, rely=_rely, anchor="w")
-    # inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial, "serialNumber", inputField.Puma, inputField.MDL2))
-    f2_iniRow += 1
-    f2_iniCol = 0
+
+    labelImage = ImageTk.PhotoImage(Image.open(".\\Media\\label.jpg"))
+    chip_Canvas = Label(scanFrame, image=labelImage)
+    chip_Canvas.place(relx=image_Relx, rely=_rely, anchor="w")
+
 
 
     text4 = Label(scanFrame, text= "Scan Puma:", fg="white", bg="#004694", font=('times','25'), justify="right")
     text4.place(relx=text_Relx, rely=_rely*3, anchor="e")
-    # text4.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
-    f2_iniCol += 1
 
     inputField.Puma = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
     inputField.Puma.place(relx=IF_Relx, rely=_rely * 3, anchor="w")
-    # inputField.Puma.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.Puma.bind('<Return>', lambda event: GoToNextEntry(inputField.Puma, "puma", inputField.MDL1))
     inputField.Puma["state"] = "disabled"
-    f2_iniRow += 1
-    f2_iniCol = 0
+
+    chipImage = ImageTk.PhotoImage(Image.open(".\\Media\\chip.jpg"))
+    chip_Canvas = Label(scanFrame, image=chipImage)
+    chip_Canvas.place(relx=image_Relx, rely=_rely*3, anchor="w")
+
+
 
     text5 = Label(scanFrame, text= "Scan MDL:", fg="white", bg="#0472A3", font=('times','25'), justify="right")
     text5.place(relx=text_Relx, rely=_rely*5, anchor="e")
-    # text5.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
-    f2_iniCol += 1
 
     inputField.MDL1 = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
     inputField.MDL1.place(relx=IF_Relx, rely=_rely*5, anchor="w")
-    # inputField.MDL1.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL1.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL1, "MDL1", inputField.MDL2))
-    f2_iniRow += 1
-    f2_iniCol = 0
+
+    MDLImage = ImageTk.PhotoImage(Image.open(".\\Media\\MDL.png"))
+    chip_Canvas = Label(scanFrame, image=MDLImage)
+    chip_Canvas.place(relx=image_Relx, rely=_rely*5, anchor="w")
+
+
 
     text6 = Label(scanFrame, text="Scan MDL:", fg="white", bg="#2099C6", font=('times', '25'), justify="right")
     text6.place(relx=text_Relx, rely=_rely*7, anchor="e")
-    # text6.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
-    f2_iniCol += 1
 
     inputField.MDL2 = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
     inputField.MDL2.place(relx=IF_Relx, rely=_rely * 7, anchor="w")
-    # inputField.MDL2.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL2.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL2, "MDL2"))
     inputField.MDL2["state"] = "disabled"
-    f2_iniRow += 1
-    f2_iniCol = 0
+
+    MDL2Image = ImageTk.PhotoImage(Image.open(".\\Media\\MDL2.png"))
+    chip_Canvas = Label(scanFrame, image=MDL2Image)
+    chip_Canvas.place(relx=image_Relx, rely=_rely*7, anchor="w")
+
+
 
     logOut_Bttn = Button(scanFrame, text="Log out", command=lambda: Logout(loginFrame), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     logOut_Bttn.place(relx=0.3, rely=_rely*9, anchor="center")
-    # logOut_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
-    f2_iniCol += 1
 
     Submit_Bttn = Button(scanFrame, text="Submit", command=lambda: submit(), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     Submit_Bttn.place(relx=0.7, rely=_rely*9, anchor="center")
-    # Submit_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
 
 
+    # Select Frame 1 as the initial frame
+    raise_frame(loginFrame, inputField.Badge)
+    # Select Frame 2 as the initial frame (for testing purposes)
     # raise_frame(scanFrame,inputField.Serial)
 
     window.mainloop()
