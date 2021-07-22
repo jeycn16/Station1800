@@ -64,30 +64,6 @@ def LaunchBrowser():
 
 
 
-# def logIntoMES(driver, user):
-#     # Find Login field
-#     try:
-#         usr = driver.find_element_by_id("BadgeIDTextBox")
-#     except:
-#         print("Couldn't find id")
-#     else:
-#         usr.clear()
-#         usr.send_keys(user)
-#         # return driver
-#         # fillEntryBox(driver, user)
-#
-#
-#     # Press login button
-#     try:
-#         loginButton = driver.find_element_by_id("LogInButton")
-#     except:
-#         print("Couldn't login")
-#     else:
-#         loginButton.click()
-#
-#     return driver
-
-
 def pressButton(driver, findBy, errorMessage, ID=None, XPath=None):
     if findBy == "ID":
         try:
@@ -123,16 +99,6 @@ def waitForWebsite(driver, findBy, item):
     return driver
 
 
-# def fillEntryBox(driver, text):
-#     try:
-#         serialEntry = driver.find_element_by_id("T7")       # serialEntry
-#     except:
-#         print("Couldn't find serial entry box")
-#     else:
-#         serialEntry.clear()
-#         serialEntry.send_keys(text)
-#     return driver
-
 
 
 def fillEntryBox(driver,findBy, errorMessage, text, ID=None, XPath=None, Class=None):
@@ -166,18 +132,6 @@ def fillEntryBox(driver,findBy, errorMessage, text, ID=None, XPath=None, Class=N
     return driver, x
 
 
-# def SubmitSerial(driver):
-#     try:
-#         loadBttn = driver.find_element_by_xpath("/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
-#     except:
-#         print("Couldn't find load button")
-#     else:
-#         loadBttn.click()
-#     return driver
-
-
-
-
 
 #--------------------------------------------------------------------------------------------------------------#
 def MESLogIn(data):
@@ -188,6 +142,8 @@ def MESLogIn(data):
     driver = waitForWebsite(driver, "ID", "T7")
     return driver
 
+
+#--------------------------------------------------------------------------------------------------------------#
 def MESWork(data, driver):
     driver,_ = fillEntryBox(driver, "ID", "Couldn't find serial entry box", data.serialNumber, ID="T7")                 # Input serial number
     driver = pressButton(driver, "XPath", "Couldn't find load button", XPath="/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
@@ -214,22 +170,11 @@ def MESWork(data, driver):
         entryBox.send_keys(Keys.RETURN)
         time.sleep(2)
 
-
-    # driver = fillEntryBox(driver, "XPath", "Couldn't find vendor barcode entry box, Xpath", data.puma, XPath="/html/body/form/div/div[7]/div[2]/div/div/div[1]/div/div[4]/div/div[2]/div[2]/div[1]/div[2]/input")
-    # time.sleep(1)
-    # try:
-    #     driver = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.puma, ID="T2")
-    # except:
-    #     pass
-    # try:
-    #     driver = fillEntryBox(driver, "Class", "Couldn't find vendor barcode entry box", data.puma, ID="T2")
-    # except:
-    #     pass
-    # driver = fillEntryBox(driver, "T2", "Couldn't find vendor barcode entry box", data.MDL1)
-    # time.sleep(1)
     driver.switch_to.default_content()
     return driver
 
+
+#--------------------------------------------------------------------------------------------------------------#
 def MESLogout(driver):
     driver.quit()
 
