@@ -8,6 +8,7 @@ from MESintegration import MESLogIn
 from MESintegration import MESWork
 from MESintegration import MESLogout
 import time
+import configparser
 
 
 # TODO ICB don't get pumas. clear input fields
@@ -20,13 +21,14 @@ class _time:
         self.lastScan = lastScan
 
 class data:
-    def __init__(self, badge, serialNumber, puma, MDL1, MDL2, unitSize):
+    def __init__(self, badge, serialNumber, puma, MDL1, MDL2, unitSize, unitType):
         self.badge = badge
         self.serialNumber = serialNumber
         self.puma = puma
         self.MDL1 = MDL1
         self.MDL2 = MDL2
         self.unitSize = unitSize
+        self.unitType = unitType
 
 
 class inputField:
@@ -43,17 +45,6 @@ class driver:
 
 
 # Define functions
-
-# def resource_path(relative_path):
-#     """ Get absolute path to resource, works for dev and for PyInstaller """
-#     try:
-#         # PyInstaller creates a temp folder and stores path in _MEIPASS
-#         base_path = sys._MEIPASS
-#     except Exception:
-#         base_path = os.path.abspath(".")
-#
-#     return os.path.join(base_path, relative_path)
-
 
 def RiseGUI():
     subprocess.call([".\\Macro\\bringGUI2Front.exe"])
@@ -102,7 +93,8 @@ def login(nextFrame, selfInputField, nextInputField):
         # Clear entry field
         ClearField(selfInputField)
 
-    BringGUI2Front(loginFrame, nextInputField)
+    raise_frame(nextFrame, nextInputField)
+    # BringGUI2Front(loginFrame, nextInputField)
 
 
 def Logout(nextFrame):
@@ -133,6 +125,8 @@ def clearUnitEntryFields():
     data.puma = ""
     data.MDL1 = ""
     data.MDL2 = ""
+    data.unitSize = ""
+    data.unitType = ""
 
 
 def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
@@ -178,31 +172,38 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
         serialNum = data.serialNumber
         unitSize = ""
 
-        if "$" in serialNum:
+        try:
             unitSize = serialNum.split("$")[3]  #slicing through serial number to just the model code "DF48...."
-            if unitSize.startswith("DF") or unitSize.startswith("IR"):
+            if unitSize.startswith("ICBDF") or unitSize.startswith("ICBIR"):
                 try:
-                    unitSize = int(unitSize[2:4])
-                except:
-                    displayError("Problems finding the unit size in serial")
-                    ClearField(selfEntry)                       # Clear entry field
-            elif unitSize.startswith("ICBDF") or unitSize.startswith("ICBIR"):
-                try:
+                    data.unitType = unitSize[0:5]
                     unitSize = int(unitSize[5:7])
                 except:
-                    displayError("Problems finding the unit size in serial")
+                    displayError("Problems finding the unit size in ICB unit")
+                    ClearField(selfEntry)  # Clear entry field
+            elif unitSize.startswith("DF") or unitSize.startswith("IR"):
+                try:
+                    data.unitType = unitSize[0:2]
+                    unitSize = int(unitSize[2:4])
+                except:
+                    displayError("Problems finding the unit size in regular")
                     ClearField(selfEntry)                       # Clear entry field
             else:
                 displayError("Problems finding the unit type in serial")
                 ClearField(selfEntry)                           # Clear entry field
-        else:
+        except:
             displayError("Serial string could not be parsed")
             ClearField(selfEntry)                               # Clear entry field
+            selfEntry.focus_set()
 
-        data.unitSize = unitSize                                # Save unit size
+        data.unitSize = unitSize # Save unit size
+
 
         if data.unitSize == 48 or data.unitSize == 60:      # Change the state of MDL2 entry field to normal if unit is 48" or 60"
             MDL2_entry['state'] = "normal"
+
+        if data.unitType == "DF" or data.unitType == "IR":
+            inputField.Puma["state"] = "normal"
 
     elif attribute == "puma":
         data.puma = selfEntry.get()
@@ -216,10 +217,13 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
     else:
         print("Error\nBad entry field")
 
-    if nextEntry != None:                                       # If a next entry field is provided, switch focus to that field
+    if nextEntry == None:
+        doMacro()
+    else:
         nextEntry.focus_set()
-    else:                                                       # If a next entry field is not provided, it's because we reached the final entry field
-        doMacro()                                               # execute macro
+
+    if (data.unitType == "ICBDF" or data.unitType == "ICBIR") and nextEntry == inputField.Puma:
+        inputField.MDL1.focus_set()
 
     if attribute == "MDL1":                                     # If we're scanning MDL1, go to next entry field (MDL2) if unit requires it.
         if (data.unitSize == 48 or data.unitSize == 60):
@@ -228,11 +232,18 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
             doMacro()
 
 
+
 def submit():
     data.serialNumber = inputField.Serial.get()
-    data.puma = inputField.Puma.get()
+    try:
+        data.puma = inputField.Puma.get()
+    except:
+        pass
     data.MDL1 = inputField.MDL1.get()
-    data.MDL2 = inputField.MDL2.get()
+    try:
+        data.MDL2 = inputField.MDL2.get()
+    except:
+        pass
     doMacro()
 
 
@@ -243,11 +254,13 @@ def doMacro():
     sotredValues_Path = os.path.join(HiddenFolder, "Stored values.txt")
     with open(sotredValues_Path, 'w') as outfile:
         outfile.write(str(data.badge) + "\n")
-        outfile.write(data.serialNumber + "\n")
         outfile.write(str(data.unitSize) + "\n")
+        outfile.write(data.unitType + "\n")
+        outfile.write(data.serialNumber + "\n")
         outfile.write(data.puma + "\n")
         outfile.write(data.MDL1 + "\n")
         outfile.write(data.MDL2 + "\n")
+
 
 
     # Put path to the txt file in ram memory
@@ -257,18 +270,33 @@ def doMacro():
     time.sleep(5)
     print("Start LabViewIntegration")
     # Call a macro to start the test
+
+
+
+
+
     subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
-
-
     print("Start MES integration")
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
+
+
+
+
     # driver.driver = MESCheckTest(data, driver.driver)     # Call driver and input data
     clearUnitEntryFields()                                  # Clear entry fields and data stored
     inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
+    inputField.Puma["state"] = "disabled"                   # Disable Puma input field
     inputField.Serial.focus_set()                           # Set focus on serial input field
 
     # BringGUI2Front(scanFrame, inputField.Serial)            # Bring GUI to front again
+
+
+
     RiseGUI()                                  # Bring GUI to front again
+
+
+
+
 
     workingTime.lastScan = time.perf_counter()              # Taking time after each unit done
 
@@ -294,7 +322,7 @@ def GUI():
     # icon_Path = resource_path(".\\Media\\SmartGuy_Ico.ico")
     window.iconbitmap(icon_Path)
 
-    backgroungImage_Path = ".\\Media\\Wolf Logo.jpg"
+    backgroungImage_Path = ".\\Media\\background.jpg"            # ".\\Media\\Wolf Logo.jpg"
     # backgroungImage_Path = resource_path(".\\Media\\Wolf Logo.jpg")
     backgroungImage = ImageTk.PhotoImage(Image.open(backgroungImage_Path))
 
@@ -317,24 +345,29 @@ def GUI():
 
     wolfLogo = Label(loginFrame, image=backgroungImage)
     # wolfLogo = Label(loginFrame, bg="black")
-    wolfLogo.grid(row=f1_iniRow, column=f1_iniCol, sticky='w')
-    f1_iniRow += 1
+    wolfLogo.pack()
+    # wolfLogo.grid(row=f1_iniRow, column=f1_iniCol, sticky='w')
+    # f1_iniRow += 1
 
     text1 = Label(loginFrame, text="Welcome", fg="black", font=('times','35', 'bold'))
-    text1.grid(row=f1_iniRow, column=f1_iniCol)
-    f1_iniRow += 1
+    text1.place(relx=0.5, rely=0.2, anchor="center")
+    # text1.grid(row=f1_iniRow, column=f1_iniCol)
+    # f1_iniRow += 1
 
     text2 = Label(loginFrame, text="Scan your ID:", fg="black", font=('times','25'))
-    text2.grid(row=f1_iniRow, column=f1_iniCol)
-    f1_iniRow += 1
+    text2.place(relx=0.5, rely=0.4, anchor="center")
+    # text2.grid(row=f1_iniRow, column=f1_iniCol)
+    # f1_iniRow += 1
 
     inputField.Badge = Entry(loginFrame, width=10, bg="white", font=('times','25'), justify='center')
-    inputField.Badge.grid(row=f1_iniRow, column=f1_iniCol, ipady=10)
+    inputField.Badge.place(relx=0.5, rely=0.7, anchor="center")
+    # inputField.Badge.grid(row=f1_iniRow, column=f1_iniCol, ipady=10)
     inputField.Badge.focus_set()
-    f1_iniRow += 1
+    # f1_iniRow += 1
 
     logIn_Bttn = Button(loginFrame, text="Log in", command=lambda: login(scanFrame, inputField.Badge, inputField.Serial), bg="gray", font=('times','15'), relief=RAISED, borderwidth=5)
-    logIn_Bttn.grid(row=f1_iniRow, column=f1_iniCol, pady=8, sticky='s')
+    logIn_Bttn.place(relx=0.5, rely=0.9, anchor="center")
+    # logIn_Bttn.grid(row=f1_iniRow, column=f1_iniCol, pady=8, sticky='s')
     inputField.Badge.bind('<Return>', lambda event: login(scanFrame, inputField.Badge, inputField.Serial))
 
 
@@ -348,71 +381,89 @@ def GUI():
     ###   Contains the screen where operator has to scan the serial number, puma, MDL 1, and MDL2 (if required)     ###
     ###                                                                                                             ###
     ###################################################################################################################
+
     f2_iniRow = 0
     f2_iniCol = 0
     f2_padx = 10
     f2_pady = 10
 
-    text3 =Label(scanFrame, text= "Scan pallet label:", fg="black", font=('times','25'))
-    text3.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
-    f2_iniCol += 1
+    text_Relx = 0.4
+    IF_Relx = 0.45
+    _rely = 0.1
+
+    wolfLogo = Label(scanFrame, image=backgroungImage)
+    wolfLogo.pack()
+
+    text3 =Label(scanFrame, text= "Scan pallet label:", fg="white", bg="#011F67", font=('times','25'))
+    text3.place(relx=text_Relx, rely=_rely, anchor="e")
+    # text3.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
+    # f2_iniCol += 1
 
 
-    inputField.Serial = Entry(scanFrame, width=25, bg="white", font=('times','10'))
-    inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
-    # inputField.Serial.focus_set()
-    inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial , "serialNumber", inputField.Puma, inputField.MDL2))
+    inputField.Serial = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
+    inputField.Serial.place(relx=IF_Relx, rely=_rely, anchor="w")
+    # inputField.Serial.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    inputField.Serial.bind('<Return>', lambda event: GoToNextEntry(inputField.Serial, "serialNumber", inputField.Puma, inputField.MDL2))
     f2_iniRow += 1
     f2_iniCol = 0
 
 
-    text4 = Label(scanFrame, text= "Scan Puma:", fg="black", font=('times','25'))
-    text4.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
+    text4 = Label(scanFrame, text= "Scan Puma:", fg="white", bg="#004694", font=('times','25'), justify="right")
+    text4.place(relx=text_Relx, rely=_rely*3, anchor="e")
+    # text4.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.Puma = Entry(scanFrame, width=25, bg="white")
-    inputField.Puma.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    inputField.Puma = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
+    inputField.Puma.place(relx=IF_Relx, rely=_rely * 3, anchor="w")
+    # inputField.Puma.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.Puma.bind('<Return>', lambda event: GoToNextEntry(inputField.Puma, "puma", inputField.MDL1))
+    inputField.Puma["state"] = "disabled"
     f2_iniRow += 1
     f2_iniCol = 0
 
-    text5 = Label(scanFrame, text= "Scan MDL:", fg="black", font=('times','25'))
-    text5.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
+    text5 = Label(scanFrame, text= "Scan MDL:", fg="white", bg="#0472A3", font=('times','25'), justify="right")
+    text5.place(relx=text_Relx, rely=_rely*5, anchor="e")
+    # text5.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.MDL1 = Entry(scanFrame, width=25, bg="white")
-    inputField.MDL1.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    inputField.MDL1 = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
+    inputField.MDL1.place(relx=IF_Relx, rely=_rely*5, anchor="w")
+    # inputField.MDL1.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL1.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL1, "MDL1", inputField.MDL2))
     f2_iniRow += 1
     f2_iniCol = 0
 
-    text6 = Label(scanFrame, text="Scan MDL:", fg="black", font=('times', '25'))
-    text6.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
+    text6 = Label(scanFrame, text="Scan MDL:", fg="white", bg="#2099C6", font=('times', '25'), justify="right")
+    text6.place(relx=text_Relx, rely=_rely*7, anchor="e")
+    # text6.grid(row=f2_iniRow, column=f2_iniCol, sticky='e', padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    inputField.MDL2 = Entry(scanFrame, width=25, bg="white")
-    inputField.MDL2.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    inputField.MDL2 = Entry(scanFrame, width=15, bg="white", font=('times','25'), borderwidth=4)
+    inputField.MDL2.place(relx=IF_Relx, rely=_rely * 7, anchor="w")
+    # inputField.MDL2.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     inputField.MDL2.bind('<Return>', lambda event: GoToNextEntry(inputField.MDL2, "MDL2"))
     inputField.MDL2["state"] = "disabled"
     f2_iniRow += 1
     f2_iniCol = 0
 
-    logOut_Bttn = Button(scanFrame, text="Log out", command=lambda: Logout(loginFrame), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
-    logOut_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    logOut_Bttn = Button(scanFrame, text="Log out", command=lambda: Logout(loginFrame), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    logOut_Bttn.place(relx=0.3, rely=_rely*9, anchor="center")
+    # logOut_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
     f2_iniCol += 1
 
-    Submit_Bttn = Button(scanFrame, text="Submit", command=lambda: submit(), bg="gray", font=('times', '15'), relief=RAISED, borderwidth=5)
-    Submit_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
+    Submit_Bttn = Button(scanFrame, text="Submit", command=lambda: submit(), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    Submit_Bttn.place(relx=0.7, rely=_rely*9, anchor="center")
+    # Submit_Bttn.grid(row=f2_iniRow, column=f2_iniCol, sticky=W, padx=f2_padx, pady=f2_pady)
 
 
-    # raise_frame(scanFrame)
+    # raise_frame(scanFrame,inputField.Serial)
 
     window.mainloop()
 
 
 if __name__ == "__main__":
     # Initialize variables
-    data = data("","","","","","")
+    data = data("","","","","","","")
     inputField = inputField(None, None, None, None, None)
     driver = driver(None)
     workingTime = _time(0, 0)
@@ -425,6 +476,32 @@ if __name__ == "__main__":
         # This makes the folder invisible
         subprocess.check_call(["attrib", "+H", HiddenFolder])
 
+    # Create the settings file that the macro will use for the LabViewIntegration
+    macroSettings_Path = ".\\Macro\\Macro Settings.ini"
+    if not os.path.isfile(macroSettings_Path):
+
+        # Create settings file
+        macroSettings = configparser.ConfigParser()
+
+        # ImagePaths
+        macroSettings["ImagePaths"] =   {
+                                        "runButton": "%%SCRIPT_DIR%%\Macro image files\RunButton.jpg",
+                                        "greenCheckButton": "%%SCRIPT_DIR%%\Macro image files\GreenCheckButton.jpg"
+                                        }
+
+        # ImageTolerances
+        macroSettings["ImageTolerances"] = {}
+        macroSettings["ImageTolerances"]["runButtonTolerance"] = "0.7"
+        macroSettings["ImageTolerances"]["greenCheckButtonTolerance"] = "0.7"
+
+        # Miscellaneous
+        macroSettings["Miscellaneous"] = {}
+        macroSettings["Miscellaneous"]["waitMultiplier"] = "1"
+        macroSettings["Miscellaneous"]["testFinishedKeyWord"] = "Test Complete..."
+
+        # save to a file
+        with open(macroSettings_Path, 'w') as configfile:
+            macroSettings.write(configfile)
 
 
     # Execute GUI
