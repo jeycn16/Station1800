@@ -41,11 +41,11 @@ class driver:
 
 ###################################################################################################################
 ###                                                                                                             ###
-###                                       GENERA FUNCTIONS                                                      ###
+###                                       GENERAL FUNCTIONS                                                      ###
 ###                                                                                                             ###
 ###################################################################################################################
 
-def RiseGUI():
+def RiseGUI(): #raising GUI to the front of the screen using Macro Scheduler
     subprocess.call([".\\Macro\\bringGUI2Front.exe"])
 
 
@@ -54,7 +54,7 @@ def RiseGUI():
     nextInputField.focus_set()"""
 
 
-def raise_frame(frame, inputField):
+def raise_frame(frame, inputField): #raising a certain frame
     """
     Moves frame to the top of the GUI, sets focus on the indicated input field
     """
@@ -63,14 +63,14 @@ def raise_frame(frame, inputField):
     inputField.focus_set()
 
 
-def displayError(message):
+def displayError(message): #displaying an error message
     """
     Displays an Error box with the desired message in it
     """
     messagebox.showerror("Error", message)
 
 
-def login(selfFrame, nextFrame, selfInputField, nextInputField):
+def login(selfFrame, nextFrame, selfInputField, nextInputField): #logging in function
     """
     Saves the badge number to data.badge and displays the next frame of the GUI, setting the focus on the next input
     field (serial number input field).
@@ -96,20 +96,20 @@ def login(selfFrame, nextFrame, selfInputField, nextInputField):
         raise_frame(selfFrame, selfInputField)
 
 
-def Logout(nextFrame):
+def Logout(nextFrame): #logout function
     MESLogout(driver.driver)
     ClearField(inputField.Badge)
     raise_frame(nextFrame, inputField.Badge)
 
 
-def ClearField(inputField):
+def ClearField(inputField): #clearing the text box
     """
     Clears the input field provided
     """
     inputField.delete(0,END)
 
 
-def clearUnitEntryFieldsAndWipeOutData():
+def clearUnitEntryFieldsAndWipeOutData(): #clears data for entry boxes and empty class variables
     """
     Clears every input field in the second frame (serial number, puma, MDL1, MDL2)
     Wipes out data
@@ -228,7 +228,7 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
 
 
 
-def submit():
+def submit(): #saving entered values into class variable
     data.serialNumber = inputField.Serial.get()
     try:
         data.puma = inputField.Puma.get()
@@ -241,9 +241,7 @@ def submit():
         pass
     doMacro()
 
-
-
-def doMacro():
+def doMacro(): #Macro is performed
     print("Saving Values")
     print(data.serialNumber)
     sotredValues_Path = os.path.join(HiddenFolder, "Stored values.txt")
@@ -256,8 +254,6 @@ def doMacro():
         outfile.write(data.MDL1 + "\n")
         outfile.write(data.MDL2 + "\n")
 
-
-
     # Put path to the txt file in ram memory
     clipboard.copy(sotredValues_Path)
     # clipboard.copy(".\\Stored values.txt")
@@ -266,16 +262,9 @@ def doMacro():
     print("Start LabViewIntegration")
     # Call a macro to start the test
 
-
-
-
-
     subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
     print("Start MES integration")
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
-
-
-
 
     # driver.driver = MESCheckTest(data, driver.driver)     # Call driver and input data
     clearUnitEntryFieldsAndWipeOutData()                                  # Clear entry fields and data stored
@@ -285,13 +274,7 @@ def doMacro():
 
     # BringGUI2Front(scanFrame, inputField.Serial)            # Bring GUI to front again
 
-
-
     RiseGUI()                                  # Bring GUI to front again
-
-
-
-
 
     workingTime.lastScan = time.perf_counter()              # Taking time after each unit done
 
@@ -307,7 +290,7 @@ def doMacro():
 ###################################################################################################################
 
 
-def GUI():
+def GUI(): #GUI
     global loginFrame, scanFrame
     """
     This is the user interface. It contains only the buttons and entry boxes that the user can interact with
@@ -340,7 +323,7 @@ def GUI():
     ###   scanning units                                                                                            ###
     ###################################################################################################################
 
-
+    #Wolf Logo
     wolfLogo = Label(loginFrame, image=backgroungImage)
     wolfLogo.pack()
 
