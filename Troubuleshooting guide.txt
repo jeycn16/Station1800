@@ -7,10 +7,11 @@ Answer: If the application is unresponsive there is an appliation within the Sta
 Question: What to do if the run button can't be found in LabView?
 
 Answer: If the run button can not be found in LabView, first make sure the image on the LabView appliation has not changed since the last time it was updated. 
-The macro reads the image of the run button and makes sure the image matches the one saved on the program, so make sure the picture has not changed. If that is not the case, then lower the resolution of the image finder because it may not be able to find the image, even if the images are the same. 
-"1" is the highest resolution, where they need to match pixel to pixel, and "0" was no match at all. It was started at "0.3" for this project, so if that is not the case at the time of viewing this, try that first and adjust accordingly.
+The macro reads the image of the run button and makes sure the image matches the one saved on the program, so make sure the picture has not changed. If that is not the case, then lower the resolution of the image finder because it may not be able to find the image, even if the images are the same. "1" is the highest resolution, where they need to match pixel to pixel, and "0" was no match
+at all. It was started at "0.3" for this project, so if that is not the case at the time of viewing this, try that first and adjust accordingly.
 
-What to do if the check button can't be found in LabView
+What to do if the check button can't be found in LabVie
+
 
 What are Image Tolerances.
 
