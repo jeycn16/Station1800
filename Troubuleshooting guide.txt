@@ -24,12 +24,12 @@ at all. It was started at "0.3" for this project, so if that is not the case at 
 
 Question: What to do if the application doesn't recognize that the test has been completed?
 
-Answer: Make sure that the text "Test Complete..." in the LabView program is still the word that signals that the program si done. It can change and the macro needs to know what the exact words are that desginates a completed test.
+Answer: Make sure that the text "Test Complete..." in the LabView program is still the word that signals that the program is done. It can change and the macro needs to know what the exact words are that desginates a completed test.
 
 
 Question: What are Macro Settings and how to change them (adjust tolerances, change image directory paths)?
 
-Answer: 
+Answer: The Macro Settings desginate the 
 
 What to do if Google Chrome flashes open and closes inmediately.
 
