@@ -1,0 +1,34 @@
+What to do if the application is unresponsive or if it got stuck in a loop?
+
+What to do if the run button can't be found in LabView
+
+What to do if the check button can't be found in LabView
+
+What are Image Tolerances.
+
+What to do if the the application doesn't recognize that the test has been completed.
+
+What are Macro Settings and how to change them (adjust tolerances, change image directory paths).
+
+What to do if Google Chrome flashes open and closes inmediately.
+
+How to check Google Chrome's version
+
+How to update Google Chrome's Selenium drivers.
+
+What is the application looking for when the operator scans serial numbers
+	-Badge
+	-Pallet label
+	-Puma
+
+Where in the code can these parameters be adjusted
+
+Error explanation
+
+	Error 1:
+
+	Error 2:
+	.
+	.
+	.
+
