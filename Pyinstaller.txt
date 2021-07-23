@@ -1,1 +1,0 @@
-pyinstaller --noconfirm --onedir --console --icon "C:/_Code/Station1800/Media/SmartGuy_Ico.ico"  "C:/_Code/Station1800/Station1800.py"
