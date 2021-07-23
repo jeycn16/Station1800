@@ -4,20 +4,32 @@ Question: What to do if the application is unresponsive or if it got stuck in a 
 
 Answer: If the application is unresponsive there is an appliation within the Station1800-master folder called labviewintegrationkiller.py. If it is stuck in a loop the same process will work as well.
 
+
 Question: What to do if the run button can't be found in LabView?
 
 Answer: If the run button can not be found in LabView, first make sure the image on the LabView appliation has not changed since the last time it was updated. 
-The macro reads the image of the run button and makes sure the image matches the one saved on the program, so make sure the picture has not changed. If that is not the case, then lower the resolution of the image finder because it may not be able to find the image, even if the images are the same. "1" is the highest resolution, where they need to match pixel to pixel, and "0" was no match
+The macro reads the image of the run button and makes sure the image matches the one saved on the program, so make sure the picture has not changed. If that is not the case, then lower the resolution of the image finder because it may not be able to find the image, even if the images are the same. 
+
+
+Question: What to do if the check button can't be found in LabView?
+
+Answer: Same answer as the run button.
+
+
+Question: What are Image Tolerances?
+
+Answer: "1" is the highest resolution, where they need to match pixel to pixel, and "0" was no match
 at all. It was started at "0.3" for this project, so if that is not the case at the time of viewing this, try that first and adjust accordingly.
 
-What to do if the check button can't be found in LabVie
+
+Question: What to do if the application doesn't recognize that the test has been completed?
+
+Answer: Make sure that the text "Test Complete..." in the LabView program is still the word that signals that the program si done. It can change and the macro needs to know what the exact words are that desginates a completed test.
 
 
-What are Image Tolerances.
+Question: What are Macro Settings and how to change them (adjust tolerances, change image directory paths)?
 
-What to do if the the application doesn't recognize that the test has been completed.
-
-What are Macro Settings and how to change them (adjust tolerances, change image directory paths).
+Answer: 
 
 What to do if Google Chrome flashes open and closes inmediately.
 
