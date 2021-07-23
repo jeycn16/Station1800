@@ -8,3 +8,6 @@ Comments:
 If any scan is inputted incorrectly, there will be popups that indicate the error. The operator can than go back to the GUI and scan the correct part.
 
 If the application seems to be faulty by any means,  the operator can go into the two software manually and complete the station that way as well.
+
+If any part is updated on the unit, the Station1800.py file needs to be updated to accomodate for these changes and to allow the operator to visualize which part they are scanning so they do not scan the incorrect item and are forced to rescan.
+
