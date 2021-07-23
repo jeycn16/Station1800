@@ -1,6 +1,12 @@
-What to do if the application is unresponsive or if it got stuck in a loop?
+FAQs:
 
-What to do if the run button can't be found in LabView
+Question: What to do if the application is unresponsive or if it got stuck in a loop?
+
+Answer: If the application is unresponsive there is an appliation within the Station1800-master folder called labviewintegrationkiller.py. If it is stuck in a loop the same process will work as well.
+
+Question: What to do if the run button can't be found in LabView?
+
+Answer: If the run button can not be found in LabView, first make sure the image on the LabView appliation has not changed since the last time it was updated. The macro reads the image of the run button and makes sure the image matches the one saved on the program, so make sure the picture has not changed. If that is not the case, then lower the resolution of the image finder because it may not be able to find the image, even if the images are the same. "1" is the highest resolution, where they need to match pixel to pixel, and "0" was no match at all. It was started at "0.3" for this project, so if that is not the case at the time of viewing this, try that first and adjust accordingly.
 
 What to do if the check button can't be found in LabView
 
@@ -32,3 +38,10 @@ Error explanation
 	.
 	.
 
+Comments:
+
+If any scan is inputted incorrectly, there will be popups that indicate the error. The operator can than go back to the GUI and scan the correct part.
+
+If the application seems to be faulty by any means,  the operator can go into the two software manually and complete the station that way as well.
+
+If any part is updated on the unit, the Station1800.py file needs to be updated to accomodate for these changes and to allow the operator to visualize which part they are scanning so they do not scan the incorrect item and are forced to rescan.
