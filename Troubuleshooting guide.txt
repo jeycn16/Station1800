@@ -29,22 +29,41 @@ Answer: Make sure that the text "Test Complete..." in the LabView program is sti
 
 Question: What are Macro Settings and how to change them (adjust tolerances, change image directory paths)?
 
-Answer: The Macro Settings desginate the 
+Answer: The Macro Settings desginate the different values and different images assocaited with the macro scheduler adn what it will look for when the LabView program is running.
 
-What to do if Google Chrome flashes open and closes inmediately.
 
-How to check Google Chrome's version
+Question: What to do if Google Chrome flashes open and closes immediately?
 
-How to update Google Chrome's Selenium drivers.
+Answer: 
 
-What is the application looking for when the operator scans serial numbers
+
+Question: How to check Google Chrome's version?
+
+Answer: Go onto the chrome broswer, click into settings and check the version of the browser. Make sure it matches up with one fo the drives available on the program.
+
+
+
+Question: How to update Google Chrome's Selenium drivers?
+
+Question: What is the application looking for when the operator scans serial numbers?
+
+Answer: The applicationis looking for the type of unit and the size of the unit. That will determine the number of MDLs and whether or not a Puma will need to be involved in the sccaning/unit.
+
 	-Badge
+The application will look for the validility of the badge number.
+
 	-Pallet label
+The application will check if this unit is ready to go through this station. It will also check whether or not the unit needs certain things to scan and what it does not.
+
 	-Puma
+	
+This application will check the puma and make sure the right numbe ron the serial number is scanned.
 
-Where in the code can these parameters be adjusted
+Question: Where in the code can these parameters be adjusted?
 
-Error explanation
+A
+
+Question: Error explanation?
 
 	Error 1:
 
