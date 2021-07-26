@@ -34,7 +34,7 @@ Answer: The Macro Settings desginate the different values and different images a
 
 Question: What to do if Google Chrome flashes open and closes immediately?
 
-Answer: 
+Answer: Check the version of the driver, and then make sure that the 
 
 
 Question: How to check Google Chrome's version?
@@ -44,6 +44,8 @@ Answer: Go onto the chrome broswer, click into settings and check the version of
 
 
 Question: How to update Google Chrome's Selenium drivers?
+
+Answer: Go to https://www.selenium.dev/documentation/en/webdriver/driver_requirements/ and find the download for the chrome driver. Once downloaded, then place it inside of the "Drivers" folder in the Station1800-master folder. Make sure that the program is testing for the correct version of the driver as well. It must match up with the version of the browser that you have on the computer. In order to check what version of chrome you have on your computer, you must go to the top right corner of the screen, click the three dotted logo, go to "Help", then to "About Google Chrome". Once through to that page, the version will be provided.
 
 Question: What is the application looking for when the operator scans serial numbers?
 
@@ -61,13 +63,17 @@ This application will check the puma and make sure the right numbe ron the seria
 
 Question: Where in the code can these parameters be adjusted?
 
-A
+Answer: They can be adjuste in the Station1800.py file
 
 Question: Error explanation?
 
-	Error 1:
+	Error 1: Invalid Serial Number
+	
+	Most likely means that you scanned the wrong thing, or the number count has changed on serial numbers.
 
-	Error 2:
+	Error 2: Invalid ID
+	
+	Another probable wrong scan.
 	.
 	.
 	.
