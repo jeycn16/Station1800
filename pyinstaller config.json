@@ -72,6 +72,14 @@
   {
    "optionDest": "datas",
    "value": "C:/_Code/Station1800/LabViewIntegrationKiller.exe;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/Projects/GitHub/Station1800/README.md;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/Projects/GitHub/Station1800/FAQs.docx;."
   }
  ],
  "nonPyinstallerOptions": {

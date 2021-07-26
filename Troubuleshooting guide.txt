@@ -22,6 +22,16 @@ Answer: "1" is the highest resolution, where they need to match pixel to pixel, 
 at all. It was started at "0.3" for this project, so if that is not the case at the time of viewing this, try that first and adjust accordingly.
 
 
+
+Tolerence should be given a value between 0 and 1 where 1 is a precise match and 0 is the least precise.  A value of 0.7 is recommended and should allow for subtle variations in the images and works best for portability.  The lower the value the more likely false positives will be observed.
+Source: https://www.mjtnet.com/manuals/v15/HTML/findimagepos.html
+
+
+
+
+
+
+
 Question: What to do if the application doesn't recognize that the test has been completed?
 
 Answer: Make sure that the text "Test Complete..." in the LabView program is still the word that signals that the program is done. It can change and the macro needs to know what the exact words are that desginates a completed test. This can be done in the settings section of the interface where the word looked for can be changed as well
