@@ -529,7 +529,7 @@ def GUI(): #GUI
     options_relx2 = 0.55
     options_relx3 = 0.55
 
-    runButton_Bttn = Button(settingsFrame, text="Choose Run button\nimage...", font=('times', '10'), width=20, relief=RAISED, borderwidth=5, bg="light green", command= selectImageFile)
+    runButton_Bttn = Button(settingsFrame, text="Choose Run button\nimage...", font=('times', '10'), width=20, relief=RAISED, borderwidth=5, bg="light green", command= lambda: selectImageFile("RunButton"))
     runButton_Bttn.place(relx=options_relx1, rely=0.1, anchor="w")
 
     runbttn_tlrnc_LBL = Label(settingsFrame, text="Tolenrance: ", font=('times', '18'))
@@ -542,7 +542,7 @@ def GUI(): #GUI
     inputField.runbttn_tlrnc.place(relx=options_relx3, rely=0.1, anchor="w")
 
 
-    checkButton_Bttn = Button(settingsFrame, text="Choose Check button\nimage...", font=('times', '10'), width=20, relief=RAISED, borderwidth=5, bg="light green", command= selectImageFile)
+    checkButton_Bttn = Button(settingsFrame, text="Choose Check button\nimage...", font=('times', '10'), width=20, relief=RAISED, borderwidth=5, bg="light green", command= lambda: selectImageFile("CheckButton"))
     checkButton_Bttn.place(relx=options_relx1, rely=0.3, anchor="w")
 
     checkbttn_tlrnc_LBL = Label(settingsFrame, text="Tolenrance: ", font=('times', '18'))
