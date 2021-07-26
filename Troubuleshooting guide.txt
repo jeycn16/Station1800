@@ -75,7 +75,7 @@ This application will check the puma and make sure the right numbe ron the seria
 
 Question: Where in the code can these parameters be adjusted?
 
-Answer: They can be adjusted in the Station1800.py file. They have their own class and are defined throughout the file. If you need to change the name that can be done on its own by changing the name manually ion thec code.
+Answer: They can be adjusted in the Station1800.py file. They have their own class and are defined throughout the file. If you need to change the name that can be done on its own by changing the name manually in the code.
 
 Question: Error explanation?
 
