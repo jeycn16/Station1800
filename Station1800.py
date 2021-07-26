@@ -102,7 +102,7 @@ def selectImageFile():
         copyfile(sourceFile, destinationFile)
     except:
         pass
-    inputField.runbttn_image = "%SCRIPT_DIR%\\Macro image files\\" + os.path.split(sourceFile)[1]
+    inputField.runbttn_image = "Macro image files\\" + os.path.split(sourceFile)[1]
 
 
 def displayError(message): #displaying an error message
@@ -375,15 +375,13 @@ def saveParametersTo_ini_File(pathTo_ini_file, *args):
             iniFileConfig.write(configfile)
 
 
-def settings(frameSettings):
+def settings():
     # Read Macro settings and store values
     settingsFromIni = getParametersFrom_ini_File(".\\Macro\\Macro Settings.ini",
                                 ["ImageTolerances", "runButtonTolerance"],
                                 ["ImageTolerances", "greenCheckButtonTolerance"],
                                 ["Miscellaneous", "waitMultiplier"],
-                                ["Miscellaneous", "testFinishedKeyWord"])#,
-                                # ["ImagePaths", "runbutton"],
-                                # ["ImagePaths", "greencheckbutton"])
+                                ["Miscellaneous", "testFinishedKeyWord"])
 
     macroSettings.runButtonTolerance = settingsFromIni[0]
     macroSettings.greenCheckButtonTolerance = settingsFromIni[1]
@@ -398,7 +396,7 @@ def settings(frameSettings):
 
 
     # Raise settings frame
-    raise_frame(frameSettings)
+    raise_frame(settingsFrame)
 
 
 def saveSettings():
@@ -460,7 +458,7 @@ def doMacro(): #Macro is performed
 
 
 def GUI(): #GUI
-    global loginFrame, scanFrame, optionsFrame
+    global loginFrame, scanFrame, settingsFrame
     """
     This is the user interface. It contains only the buttons and entry boxes that the user can interact with
     """
@@ -480,8 +478,8 @@ def GUI(): #GUI
     # Place frames
     loginFrame = Frame(window)
     scanFrame = Frame(window)
-    optionsFrame = Frame(window)
-    for frame in (loginFrame, scanFrame, optionsFrame):
+    settingsFrame = Frame(window)
+    for frame in (loginFrame, scanFrame, settingsFrame):
         frame.grid(row=0, column=0, sticky='news')
 
 
@@ -513,48 +511,70 @@ def GUI(): #GUI
 
     optionsImage_Path = ".\\Media\\options.png"
     optionsImage_Path = ImageTk.PhotoImage(Image.open(optionsImage_Path))
-    options_Bttn = Button(loginFrame, image=optionsImage_Path, bg="#012B7D", command=lambda: settings(optionsFrame))
+    options_Bttn = Button(loginFrame, image=optionsImage_Path, bg="#012B7D", command=settings)
     options_Bttn.place(relx=0.87, rely=0.05)
 
 
     ###################################################################################################################
-    ###                                          OPTIONS FRAME                                                      ###
+    ###                                         SETTINGS FRAME                                                      ###
     ###                                                                                                             ###
     ###                                                                                                             ###
     ###   Contains the screen where operator can change the Macro settings                                          ###
     ###                                                                                                             ###
     ###################################################################################################################
-    options_relx1 = 0.1
-    options_relx2 = 0.5
+    options_relx1 = 0.05
+    options_relx2 = 0.55
+    options_relx3 = 0.55
 
-    runButton_Bttn = Button(optionsFrame, text="Choose Run button image", command= selectImageFile)
+    runButton_Bttn = Button(settingsFrame, text="Choose Run button\nimage...", font=('times', '10'), width=20, relief=RAISED, borderwidth=5, bg="light green", command= selectImageFile)
     runButton_Bttn.place(relx=options_relx1, rely=0.1, anchor="w")
 
-    checkButton_Bttn = Button(optionsFrame, text="Choose Check button image")
-    checkButton_Bttn.place(relx=options_relx1, rely=0.3, anchor="w")
-
+    runbttn_tlrnc_LBL = Label(settingsFrame, text="Tolenrance: ", font=('times', '18'))
+    runbttn_tlrnc_LBL.place(relx=options_relx2, rely=0.1, anchor="e")
+    runbttn_tlrnc_LBL2 = Label(settingsFrame, text="Should be a number between 0 and 1. Recommended value: 0.7", font=('times', '10'))
+    runbttn_tlrnc_LBL2.place(relx=options_relx2+.098, rely=0.18, anchor="center")
 
     macroSettings.runButtonTolerance_entryValue = StringVar()
-    inputField.runbttn_tlrnc = Entry(optionsFrame, textvariable=macroSettings.runButtonTolerance_entryValue, width=4, bg="white", borderwidth=5, font=('times','18'), justify='center')
-    inputField.runbttn_tlrnc.place(relx=options_relx2, rely=0.1, anchor="w")
+    inputField.runbttn_tlrnc = Entry(settingsFrame, textvariable=macroSettings.runButtonTolerance_entryValue, width=4, bg="white", borderwidth=5, font=('times', '18'), justify='center')
+    inputField.runbttn_tlrnc.place(relx=options_relx3, rely=0.1, anchor="w")
+
+
+    checkButton_Bttn = Button(settingsFrame, text="Choose Check button\nimage...", font=('times', '10'), width=20, relief=RAISED, borderwidth=5, bg="light green", command= selectImageFile)
+    checkButton_Bttn.place(relx=options_relx1, rely=0.3, anchor="w")
+
+    checkbttn_tlrnc_LBL = Label(settingsFrame, text="Tolenrance: ", font=('times', '18'))
+    checkbttn_tlrnc_LBL.place(relx=options_relx2, rely=0.3, anchor="e")
+    checkbttn_tlrnc_LBL2 = Label(settingsFrame, text="Should be a number between 0 and 1. Recommended value: 0.7", font=('times', '10'))
+    checkbttn_tlrnc_LBL2.place(relx=options_relx2+.098, rely=0.38, anchor="center")
 
     macroSettings.greenCheckButtonTolerance_entryValue = StringVar()
-    inputField.checkbttn_tlrnc = Entry(optionsFrame, textvariable=macroSettings.greenCheckButtonTolerance_entryValue, width=4, bg="white", borderwidth=5, font=('times','18'), justify='center')
-    inputField.checkbttn_tlrnc.place(relx=options_relx2, rely=0.3, anchor="w")
+    inputField.checkbttn_tlrnc = Entry(settingsFrame, textvariable=macroSettings.greenCheckButtonTolerance_entryValue, width=4, bg="white", borderwidth=5, font=('times', '18'), justify='center')
+    inputField.checkbttn_tlrnc.place(relx=options_relx3, rely=0.3, anchor="w")
+
+
+    waitMultiplier_LBL1 = Label(settingsFrame, text="Macro speed: ", font=('times', '18'))
+    waitMultiplier_LBL1.place(relx=options_relx2, rely=0.5, anchor="e")
+    waitMultiplier_LBL2 = Label(settingsFrame, text="Higher is slower. Recommended value between 1 and 3", font=('times', '10'))
+    waitMultiplier_LBL2.place(relx=options_relx2, rely=0.58, anchor="center")
 
     macroSettings.waitMultiplier_entryValue = StringVar()
-    inputField.waitMul = Entry(optionsFrame, textvariable=macroSettings.waitMultiplier_entryValue, width=4, bg="white", borderwidth=5, font=('times','18'), justify='center')
-    inputField.waitMul.place(relx=options_relx2, rely=0.5, anchor="w")
+    inputField.waitMul = Entry(settingsFrame, textvariable=macroSettings.waitMultiplier_entryValue, width=4, bg="white", borderwidth=5, font=('times', '18'), justify='center')
+    inputField.waitMul.place(relx=options_relx3, rely=0.5, anchor="w")
+
+    keyWord_LBL1 = Label(settingsFrame, text="Cue word: ", font=('times', '18'))
+    keyWord_LBL1.place(relx=options_relx2, rely=0.7, anchor="e")
+    keyWord_LBL2 = Label(settingsFrame, text="The program will search for this word. It works as the cue to let it know the test was completed", font=('times', '10'))
+    keyWord_LBL2.place(relx=options_relx2, rely=0.78, anchor="center")
 
     macroSettings.testFinishedKeyWord_entryValue = StringVar()
-    inputField.keyWord = Entry(optionsFrame, textvariable=macroSettings.testFinishedKeyWord_entryValue, width=20, bg="white", borderwidth=5, font=('times','18'), justify='left')
-    inputField.keyWord.place(relx=options_relx2, rely=0.7, anchor="w")
+    inputField.keyWord = Entry(settingsFrame, textvariable=macroSettings.testFinishedKeyWord_entryValue, width=20, bg="white", borderwidth=5, font=('times', '18'), justify='left')
+    inputField.keyWord.place(relx=options_relx3, rely=0.7, anchor="w")
 
 
-    cancel_Bttn = Button(optionsFrame, text="Cancel", command=lambda: raise_frame(loginFrame), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    cancel_Bttn = Button(settingsFrame, text="Cancel", command=lambda: raise_frame(loginFrame), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     cancel_Bttn.place(relx=0.3, rely=0.9, anchor="center")
 
-    Save_Bttn = Button(optionsFrame, text="Save", command=lambda: saveSettings(), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    Save_Bttn = Button(settingsFrame, text="Save", command=lambda: saveSettings(), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     Save_Bttn.place(relx=0.7, rely=0.9, anchor="center")
 
     ###################################################################################################################
@@ -636,7 +656,7 @@ def GUI(): #GUI
 
     # Select Frame 1 as the initial frame
     raise_frame(loginFrame, inputField.Badge)
-    # Select Frame 2 as the initial frame (for testing purposes)
+    # raise_frame(settingsFrame)
     # raise_frame(scanFrame,inputField.Serial)
 
     window.mainloop()
@@ -669,8 +689,8 @@ if __name__ == "__main__":
 
         # ImagePaths
         macroSettings["ImagePaths"] =   {
-                                        "runButton": "%%SCRIPT_DIR%%\Macro image files\RunButton.jpg",
-                                        # "greenCheckButton": "%SCRIPT_DIR%\Macro image files\GreenCheckButton.jpg"
+                                        "runButton": "Macro image files\RunButton.jpg",
+                                        "greenCheckButton": "Macro image files\GreenCheckButton.jpg"
                                         }
 
         # ImageTolerances
