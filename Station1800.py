@@ -87,7 +87,7 @@ def raise_frame(frame, inputField=None): #raising a certain frame
         inputField.focus_set()
 
 
-def selectImageFile():
+def selectImageFile(imageType):
 
     sourceFile = filedialog.askopenfilename(
         initialdir=".\\Macro\\Macro image files", title='Select image file',
@@ -102,7 +102,10 @@ def selectImageFile():
         copyfile(sourceFile, destinationFile)
     except:
         pass
-    inputField.runbttn_image = "Macro image files\\" + os.path.split(sourceFile)[1]
+    if imageType == "RunButton":
+        inputField.runbttn_image = "Macro image files\\" + os.path.split(sourceFile)[1]
+    elif imageType == "CheckButton":
+        inputField.checkbttn_image = "Macro image files\\" + os.path.split(sourceFile)[1]
 
 
 def displayError(message): #displaying an error message
