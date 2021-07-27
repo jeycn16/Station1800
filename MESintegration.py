@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
+from tkinter import messagebox
 import time
 import os
 
@@ -84,18 +85,25 @@ def pressButton(driver, findBy, errorMessage, ID=None, XPath=None):
     return driver
 
 
-
-def waitForWebsite(driver, findBy, item):
-
+def waitForWebsite(driver, findBy, item, waitTime):
     if findBy == "ID":
         try:
-            WebDriverWait(driver, 10).until(
+            WebDriverWait(driver, waitTime).until(
                 EC.presence_of_element_located((By.ID, item))
             )
         except:
-            print("Couldn't find item")
+            # Item wasn't found
+            if item == "sampleoverlay":
+                print("No sample required. Carry on")
+                time.sleep(0.5)
+                return driver
+            else:
+                print("Couldn't find item: " + item)
+                messagebox.showwarning("Warning", "Couldn't find item: " + item)
             return
     time.sleep(0.5)
+    if item == "sampleoverlay":
+        messagebox.showwarning("Warning", "Sample required\nPlease, resolve this issue before continuing.\nAccept this message ONLY after the sample requirement has been satisfiyed")
     return driver
 
 
@@ -136,22 +144,23 @@ def fillEntryBox(driver,findBy, errorMessage, text, ID=None, XPath=None, Class=N
 #--------------------------------------------------------------------------------------------------------------#
 def MESLogIn(data):
     driver = LaunchBrowser()
-    driver = waitForWebsite(driver, "ID", "LogInButton")
+    driver = waitForWebsite(driver, "ID", "LogInButton", 10)
     driver,_ = fillEntryBox(driver, "ID", "Couldn't find id", data.badge, ID="BadgeIDTextBox")
     driver = pressButton(driver, "ID", "Couldn't find login button", ID="LogInButton")
-    driver = waitForWebsite(driver, "ID", "T7")
+    driver = waitForWebsite(driver, "ID", "T7", 10)
     return driver
 
 
 #--------------------------------------------------------------------------------------------------------------#
 def MESWork(data, driver):
+    driver = waitForWebsite(driver, "ID", "sampleoverlay", 5)
     driver,_ = fillEntryBox(driver, "ID", "Couldn't find serial entry box", data.serialNumber, ID="T7")                 # Input serial number
     driver = pressButton(driver, "XPath", "Couldn't find load button", XPath="/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
-    driver = waitForWebsite(driver, "ID", "E2frameEmbedPage")
+    driver = waitForWebsite(driver, "ID", "E2frameEmbedPage", 10)
 
     # Switch to contentFrame iFrame
     driver.switch_to.frame("E2frameEmbedPage")
-    driver = waitForWebsite(driver, "ID", "T2")
+    driver = waitForWebsite(driver, "ID", "T2", 10)
 
 
     if data.unitType == "DF" or data.unitType == "IR":
