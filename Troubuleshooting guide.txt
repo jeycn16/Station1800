@@ -23,7 +23,7 @@ at all. It was started at "0.3" for this project, so if that is not the case at 
 
 
 
-Tolerence should be given a value between 0 and 1 where 1 is a precise match and 0 is the least precise.  A value of 0.7 is recommended and should allow for subtle variations in the images and works best for portability.  The lower the value the more likely false positives will be observed.
+Tolerance should be given a value between 0 and 1 where 1 is a precise match and 0 is the least precise.  A value of 0.7 is recommended and should allow for subtle variations in the images and works best for portability.  The lower the value the more likely false positives will be observed.
 Source: https://www.mjtnet.com/manuals/v15/HTML/findimagepos.html
 
 
@@ -59,7 +59,7 @@ Answer: Go to https://www.selenium.dev/documentation/en/webdriver/driver_require
 
 Question: What is the application looking for when the operator scans serial numbers?
 
-Answer: The applicationis looking for the type of unit and the size of the unit. That will determine the number of MDLs and whether or not a Puma will need to be involved in the sccaning/unit.
+Answer: The applicationis looking for the type of unit and the size of the unit. That will determine the number of MDLs and whether or not a Puma will need to be involved in the scaning/unit.
 
 	-Badge
 	
@@ -71,7 +71,7 @@ The application will check if this unit is ready to go through this station. It 
 
 	-Puma
 	
-This application will check the puma and make sure the right numbe ron the serial number is scanned.
+This application will check the puma and make sure the right number on the serial number is scanned.
 
 Question: Where in the code can these parameters be adjusted?
 
