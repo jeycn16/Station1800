@@ -661,8 +661,8 @@ def GUI(): #GUI
 
 
     # Select Frame 1 as the initial frame
-    # raise_frame(loginFrame, inputField.Badge)
-    raise_frame(settingsFrame)
+    raise_frame(loginFrame, inputField.Badge)
+    # raise_frame(settingsFrame)
     # raise_frame(scanFrame,inputField.Serial)
 
     window.mainloop()
