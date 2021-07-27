@@ -378,7 +378,9 @@ def saveParametersTo_ini_File(pathTo_ini_file, *args):
             iniFileConfig.write(configfile)
 
 
-def settings():
+def settings(selfFrame):
+    global frameBeforeSettings
+    frameBeforeSettings = selfFrame
     # Read Macro settings and store values
     settingsFromIni = getParametersFrom_ini_File(".\\Macro\\Macro Settings.ini",
                                 ["ImageTolerances", "runButtonTolerance"],
@@ -402,7 +404,7 @@ def settings():
     raise_frame(settingsFrame)
 
 
-def saveSettings():
+def saveSettings(previousFrame):
     # Update ini file with new settings
     saveParametersTo_ini_File(".\\Macro\\Macro Settings.ini",
                               ["ImagePaths", "runbutton", inputField.runbttn_image],
@@ -414,13 +416,11 @@ def saveSettings():
 
 
     # Raise settings frame
-    raise_frame(loginFrame)
+    raise_frame(previousFrame)
 
 
 def doMacro(): #Macro is performed
-    print("Saving Values")
-    print(data.serialNumber)
-    sotredValues_Path = os.path.join(HiddenFolder, "Stored values.txt")
+    sotredValues_Path = (".\\Macro\\Stored values.txt")
     with open(sotredValues_Path, 'w') as outfile:
         outfile.write(str(data.badge) + "\n")
         outfile.write(str(data.unitSize) + "\n")
@@ -514,7 +514,7 @@ def GUI(): #GUI
 
     optionsImage_Path = ".\\Media\\options.png"
     optionsImage_Path = ImageTk.PhotoImage(Image.open(optionsImage_Path))
-    options_Bttn = Button(loginFrame, image=optionsImage_Path, bg="#012B7D", command=settings)
+    options_Bttn = Button(loginFrame, image=optionsImage_Path, bg="#012B7D", relief=RAISED, borderwidth=5, command= lambda: settings(loginFrame))
     options_Bttn.place(relx=0.87, rely=0.05)
 
 
@@ -557,7 +557,7 @@ def GUI(): #GUI
 
     waitMultiplier_LBL1 = Label(settingsFrame, text="Macro speed: ", font=('times', '18'))
     waitMultiplier_LBL1.place(relx=options_relx2, rely=0.5, anchor="e")
-    waitMultiplier_LBL2 = Label(settingsFrame, text="Higher is slower. Recommended value between 1 and 3", font=('times', '10'))
+    waitMultiplier_LBL2 = Label(settingsFrame, text="The higher the number, the slower it runs. Recommended value between 1 and 3", font=('times', '10'))
     waitMultiplier_LBL2.place(relx=options_relx2, rely=0.58, anchor="center")
 
     macroSettings.waitMultiplier_entryValue = StringVar()
@@ -574,10 +574,10 @@ def GUI(): #GUI
     inputField.keyWord.place(relx=options_relx3, rely=0.7, anchor="w")
 
 
-    cancel_Bttn = Button(settingsFrame, text="Cancel", command=lambda: raise_frame(loginFrame), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    cancel_Bttn = Button(settingsFrame, text="Cancel", command=lambda: raise_frame(frameBeforeSettings), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     cancel_Bttn.place(relx=0.3, rely=0.9, anchor="center")
 
-    Save_Bttn = Button(settingsFrame, text="Save", command=lambda: saveSettings(), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    Save_Bttn = Button(settingsFrame, text="Save", command=lambda: saveSettings(frameBeforeSettings), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     Save_Bttn.place(relx=0.7, rely=0.9, anchor="center")
 
     ###################################################################################################################
@@ -656,10 +656,13 @@ def GUI(): #GUI
     Submit_Bttn = Button(scanFrame, text="Submit", command=lambda: submit(), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     Submit_Bttn.place(relx=0.7, rely=_rely*9, anchor="center")
 
+    options_Bttn2 = Button(scanFrame, image=optionsImage_Path, bg="#012B7D", relief=RAISED, borderwidth=5, command= lambda:settings(scanFrame))
+    options_Bttn2.place(relx=0.938, rely=0.89, anchor="center")
+
 
     # Select Frame 1 as the initial frame
-    raise_frame(loginFrame, inputField.Badge)
-    # raise_frame(settingsFrame)
+    # raise_frame(loginFrame, inputField.Badge)
+    raise_frame(settingsFrame)
     # raise_frame(scanFrame,inputField.Serial)
 
     window.mainloop()
@@ -674,12 +677,12 @@ if __name__ == "__main__":
     workingTime = _time(0, 0)
 
 
-    # Create hidden folder to store data
+    """# Create hidden folder to store data
     HiddenFolder = os.path.join(os.path.expanduser("~"), 'Documents', 'Macro for 1800')
     if not os.path.isdir(HiddenFolder):
         os.mkdir(HiddenFolder)
         # This makes the folder invisible
-        subprocess.check_call(["attrib", "+H", HiddenFolder])
+        subprocess.check_call(["attrib", "+H", HiddenFolder])"""
 
 
 
