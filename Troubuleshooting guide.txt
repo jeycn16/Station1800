@@ -44,7 +44,7 @@ Answer: The Macro Settings desginate the different values and different images a
 
 Question: What to do if Google Chrome flashes open and closes immediately?
 
-Answer: Check the version of the driver, and then make sure that the 
+Answer: Check the version of the driver, and then make sure that the version matches one of the drivers that is covered by the program.
 
 
 Question: How to check Google Chrome's version?
