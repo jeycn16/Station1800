@@ -1,6 +1,5 @@
 import os
 import subprocess
-import clipboard
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import messagebox
@@ -429,9 +428,6 @@ def doMacro(): #Macro is performed
         outfile.write(data.puma + "\n")
         outfile.write(data.MDL1 + "\n")
         outfile.write(data.MDL2 + "\n")
-
-    # Put path to the txt file in ram memory
-    clipboard.copy(sotredValues_Path)
 
     # Call a macro to start the test
     subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
