@@ -430,7 +430,16 @@ def doMacro(): #Macro is performed
         outfile.write(data.MDL2 + "\n")
 
     # Call a macro to start the test
-    subprocess.call([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
+
+    # os.chdir('.\\Macro')
+    # os.system('".\\Macro\\LabViewIntegration.exe"')
+
+
+    # os.startfile(".\\Macro\\LabViewIntegration.exe")
+    # os.system('".\\Macro\\LabViewIntegration.exe"')
+    # subprocess.call([".\\Macro\\LabViewIntegration.exe"])
+    # subprocess.Popen([".\\Macro\\LabViewIntegration.exe"])
+    subprocess.run([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
 
     # Start MES integration
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
