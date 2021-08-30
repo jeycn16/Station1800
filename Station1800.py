@@ -436,10 +436,19 @@ def doMacro(): #Macro is performed
 
 
     # os.startfile(".\\Macro\\LabViewIntegration.exe")
-    # os.system('".\\Macro\\LabViewIntegration.exe"')
+    os.system('".\\Macro\\LabViewIntegration.exe"')
     # subprocess.call([".\\Macro\\LabViewIntegration.exe"])
     # subprocess.Popen([".\\Macro\\LabViewIntegration.exe"])
-    subprocess.run([".\\Macro\\LabViewIntegration.exe"])                                                             # LabView Integration
+    # subprocess.run([".\\Macro\\LabViewIntegration.exe"])
+    #
+    # subprocess.call([".\\Macro\\LabViewIntegration.exe"])
+
+    while True:
+        if os.path.isfile(".\\Macro\\ProcessFinished"):
+            os.remove(".\\Macro\\ProcessFinished")
+            break
+        else:
+            time.sleep(1)
 
     # Start MES integration
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
