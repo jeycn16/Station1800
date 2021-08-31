@@ -417,6 +417,17 @@ def saveSettings(previousFrame):
     # Raise settings frame
     raise_frame(previousFrame)
 
+def startOver():
+    subprocess.call([".\\LabViewIntegrationKiller.exe"])
+    clearUnitEntryFieldsAndWipeOutData()                    # Clear entry fields and data stored
+    inputField.Puma["state"] = "disabled"                   # Disable Puma input field
+    inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
+
+    # RiseGUI()                                               # Bring GUI to front again
+    inputField.Serial.focus_set()                           # Set focus on serial input field
+
+
+
 
 def doMacro(): #Macro is performed
     sotredValues_Path = (".\\Macro\\Stored values.txt")
@@ -433,22 +444,23 @@ def doMacro(): #Macro is performed
 
     # os.chdir('.\\Macro')
     # os.system('".\\Macro\\LabViewIntegration.exe"')
-
-
     # os.startfile(".\\Macro\\LabViewIntegration.exe")
-    os.system('".\\Macro\\LabViewIntegration.exe"')
+    # os.system('".\\Macro\\LabViewIntegration.exe"')
     # subprocess.call([".\\Macro\\LabViewIntegration.exe"])
     # subprocess.Popen([".\\Macro\\LabViewIntegration.exe"])
     # subprocess.run([".\\Macro\\LabViewIntegration.exe"])
-    #
-    # subprocess.call([".\\Macro\\LabViewIntegration.exe"])
 
-    while True:
-        if os.path.isfile(".\\Macro\\ProcessFinished"):
-            os.remove(".\\Macro\\ProcessFinished")
-            break
-        else:
-            time.sleep(1)
+    subprocess.call([".\\Macro\\LabViewIntegration.exe"])
+
+    # while True:
+    #     if os.path.isfile(".\\Macro\\ProcessFinished.txt"):
+    #         os.remove(".\\Macro\\ProcessFinished.txt")
+    #         break
+    #     else:
+    #         time.sleep(1)
+
+    # messagebox.showinfo("done", "macro done")
+
 
     # Start MES integration
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
@@ -666,6 +678,9 @@ def GUI(): #GUI
 
     logOut_Bttn = Button(scanFrame, text="Log out", command=lambda: Logout(loginFrame), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     logOut_Bttn.place(relx=0.3, rely=_rely*9, anchor="center")
+
+    Clear_Bttn = Button(scanFrame, text="Clear fields", command=startOver, bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
+    Clear_Bttn.place(relx=0.5, rely=_rely * 9, anchor="center")
 
     Submit_Bttn = Button(scanFrame, text="Submit", command=lambda: submit(), bg="light blue", font=('times', '15'), relief=RAISED, borderwidth=5)
     Submit_Bttn.place(relx=0.7, rely=_rely*9, anchor="center")

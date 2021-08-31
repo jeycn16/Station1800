@@ -103,7 +103,7 @@ def waitForWebsite(driver, findBy, item, waitTime):
             return
     time.sleep(0.5)
     if item == "sampleoverlay":
-        messagebox.showwarning("Warning", "Sample required\nPlease, resolve this issue before continuing.\nAccept this message ONLY after the sample requirement has been satisfiyed")
+        messagebox.showwarning("Warning", "Sample required\nPlease, resolve this issue before continuing.\nAccept this message ONLY AFTER the sample requirement has been satisfiyed")
     return driver
 
 
