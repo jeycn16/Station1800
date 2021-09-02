@@ -86,42 +86,33 @@ def pressButton(driver, findBy, errorMessage, ID=None, XPath=None):
 
 
 def waitForWebsite(driver, findBy, item, waitTime):
-    if findBy == "ID":
-        try:
-            WebDriverWait(driver, waitTime).until(
-                EC.presence_of_element_located((By.ID, item))
-            )
-        except:
 
-            # Check if Sample is required
+    # Check if Sample is required
+    try:
+        WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.ID, "sampleoverlay"))
+        )
+
+        messagebox.showwarning("Warning",
+                               "Sample required\nPlease, resolve this issue before continuing.\n"
+                               "Accept this message ONLY AFTER the sample requirement has been satisfied")
+
+
+    except:
+        print("No sample required. Carry on")
+
+        if findBy == "ID":
             try:
                 WebDriverWait(driver, waitTime).until(
-                    EC.presence_of_element_located((By.ID, "sampleoverlay"))
+                    EC.presence_of_element_located((By.ID, item))
                 )
 
-                messagebox.showwarning("Warning",
-                                   "Sample required\nPlease, resolve this issue before continuing.\n"
-                                   "Accept this message ONLY AFTER the sample requirement has been satisfied")
-
+                print(item + " found")
+                return driver       # Item found
 
             except:
-                print("No sample required. Carry on")
-
-            # Item wasn't found
-            if item == "sampleoverlay":
-                print("No sample required. Carry on")
-                time.sleep(0.5)
-                return driver
-            else:
                 print("Couldn't find item: " + item)
                 messagebox.showwarning("Warning", "Couldn't find item: " + item)
-            return
-    time.sleep(0.5)
-    if item == "sampleoverlay":
-        messagebox.showwarning("Warning", "Sample required\nPlease, resolve this issue before continuing.\nAccept this message ONLY AFTER the sample requirement has been satisfied")
-    return driver
-
-
 
 
 def fillEntryBox(driver,findBy, errorMessage, text, ID=None, XPath=None, Class=None):
@@ -171,7 +162,7 @@ def MESWork(data, driver):
 
     driver.switch_to.default_content()
 
-    driver = waitForWebsite(driver, "ID", "sampleoverlay", 5)
+    # driver = waitForWebsite(driver, "ID", "sampleoverlay", 5)                                                         # No need to check for sample
     driver,_ = fillEntryBox(driver, "ID", "Couldn't find serial entry box", data.serialNumber, ID="T7")                 # Input serial number
     driver = pressButton(driver, "XPath", "Couldn't find load button", XPath="/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
     driver = waitForWebsite(driver, "ID", "E2frameEmbedPage", 10)

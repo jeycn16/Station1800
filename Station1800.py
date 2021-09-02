@@ -250,6 +250,7 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
             displayError(5, "Wrong puma serial number")
             ClearField(selfEntry)  # Clear entry field
             selfEntry.focus_set()
+            return
 
     elif attribute == "MDL1":
         data.MDL1 = selfEntry.get()
@@ -257,6 +258,7 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
             displayError(6, "Wrong MDL serial number")
             ClearField(selfEntry)  # Clear entry field
             selfEntry.focus_set()
+            return
 
     elif attribute == "MDL2":
         data.MDL2 = selfEntry.get()
@@ -264,6 +266,7 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
             displayError(6, "Wrong MDL serial number")
             ClearField(selfEntry)  # Clear entry field
             selfEntry.focus_set()
+            return
 
     else:
         print("Error\nBad entry field")
