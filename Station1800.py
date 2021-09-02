@@ -111,7 +111,7 @@ def displayError(Error_number, message): #displaying an error message
     """
     Displays an Error box with the desired message in it
     """
-    messagebox.showerror("Error " + Error_number, message)
+    messagebox.showerror("Error " + str(Error_number), message)
 
 
 def login(selfFrame, nextFrame, selfInputField, nextInputField): #logging in function
@@ -246,21 +246,21 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
 
     elif attribute == "puma":
         data.puma = selfEntry.get()
-        if not data.puma.startswith("904"):
+        if not data.puma.startswith("9041664"):
             displayError(5, "Wrong puma serial number")
             ClearField(selfEntry)  # Clear entry field
             selfEntry.focus_set()
 
     elif attribute == "MDL1":
         data.MDL1 = selfEntry.get()
-        if not data.puma.startswith("904"):
+        if not data.puma.startswith("215033"):
             displayError(6, "Wrong MDL serial number")
             ClearField(selfEntry)  # Clear entry field
             selfEntry.focus_set()
 
     elif attribute == "MDL2":
         data.MDL2 = selfEntry.get()
-        if not data.puma.startswith("904"):
+        if not data.puma.startswith("215033"):
             displayError(6, "Wrong MDL serial number")
             ClearField(selfEntry)  # Clear entry field
             selfEntry.focus_set()
