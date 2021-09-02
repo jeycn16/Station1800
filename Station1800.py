@@ -253,14 +253,14 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
 
     elif attribute == "MDL1":
         data.MDL1 = selfEntry.get()
-        if not data.puma.startswith("215033"):
+        if not data.MDL1.startswith("215033"):
             displayError(6, "Wrong MDL serial number")
             ClearField(selfEntry)  # Clear entry field
             selfEntry.focus_set()
 
     elif attribute == "MDL2":
         data.MDL2 = selfEntry.get()
-        if not data.puma.startswith("215033"):
+        if not data.MDL2.startswith("215033"):
             displayError(6, "Wrong MDL serial number")
             ClearField(selfEntry)  # Clear entry field
             selfEntry.focus_set()

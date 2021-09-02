@@ -92,6 +92,21 @@ def waitForWebsite(driver, findBy, item, waitTime):
                 EC.presence_of_element_located((By.ID, item))
             )
         except:
+
+            # Check if Sample is required
+            try:
+                WebDriverWait(driver, waitTime).until(
+                    EC.presence_of_element_located((By.ID, "sampleoverlay"))
+                )
+
+                messagebox.showwarning("Warning",
+                                   "Sample required\nPlease, resolve this issue before continuing.\n"
+                                   "Accept this message ONLY AFTER the sample requirement has been satisfied")
+
+
+            except:
+                print("No sample required. Carry on")
+
             # Item wasn't found
             if item == "sampleoverlay":
                 print("No sample required. Carry on")
@@ -103,7 +118,7 @@ def waitForWebsite(driver, findBy, item, waitTime):
             return
     time.sleep(0.5)
     if item == "sampleoverlay":
-        messagebox.showwarning("Warning", "Sample required\nPlease, resolve this issue before continuing.\nAccept this message ONLY AFTER the sample requirement has been satisfiyed")
+        messagebox.showwarning("Warning", "Sample required\nPlease, resolve this issue before continuing.\nAccept this message ONLY AFTER the sample requirement has been satisfied")
     return driver
 
 
@@ -153,6 +168,9 @@ def MESLogIn(data):
 
 #--------------------------------------------------------------------------------------------------------------#
 def MESWork(data, driver):
+
+    driver.switch_to.default_content()
+
     driver = waitForWebsite(driver, "ID", "sampleoverlay", 5)
     driver,_ = fillEntryBox(driver, "ID", "Couldn't find serial entry box", data.serialNumber, ID="T7")                 # Input serial number
     driver = pressButton(driver, "XPath", "Couldn't find load button", XPath="/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
