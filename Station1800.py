@@ -107,11 +107,11 @@ def selectImageFile(imageType):
         inputField.checkbttn_image = "Macro image files\\" + os.path.split(sourceFile)[1]
 
 
-def displayError(message): #displaying an error message
+def displayError(Error_number, message): #displaying an error message
     """
     Displays an Error box with the desired message in it
     """
-    messagebox.showerror("Error", message)
+    messagebox.showerror("Error " + Error_number, message)
 
 
 def login(selfFrame, nextFrame, selfInputField, nextInputField): #logging in function
@@ -134,7 +134,7 @@ def login(selfFrame, nextFrame, selfInputField, nextInputField): #logging in fun
 
 
     else:
-        displayError("Invalid ID")
+        displayError(7, "Invalid ID")
         # Clear entry field
         ClearField(selfInputField)
         raise_frame(selfFrame, selfInputField)
@@ -218,20 +218,20 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
                     data.unitType = unitSize[0:5]
                     unitSize = int(unitSize[5:7])
                 except:
-                    displayError("Problems finding the unit size in ICB unit")
+                    displayError(1, "Problems finding the unit size in ICB unit")
                     ClearField(selfEntry)  # Clear entry field
             elif unitSize.startswith("DF") or unitSize.startswith("IR"):
                 try:
                     data.unitType = unitSize[0:2]
                     unitSize = int(unitSize[2:4])
                 except:
-                    displayError("Problems finding the unit size in regular")
+                    displayError(2, "Problems finding the unit size in regular")
                     ClearField(selfEntry)                       # Clear entry field
             else:
-                displayError("Problems finding the unit type in serial")
+                displayError(3, "Problems finding the unit type in serial")
                 ClearField(selfEntry)                           # Clear entry field
         except:
-            displayError("Serial string could not be parsed")
+            displayError(4, "Serial string could not be parsed")
             ClearField(selfEntry)                               # Clear entry field
             selfEntry.focus_set()
 
@@ -246,12 +246,24 @@ def GoToNextEntry(selfEntry, attribute, nextEntry=None, MDL2_entry=None):
 
     elif attribute == "puma":
         data.puma = selfEntry.get()
+        if not data.puma.startswith("904"):
+            displayError(5, "Wrong puma serial number")
+            ClearField(selfEntry)  # Clear entry field
+            selfEntry.focus_set()
 
     elif attribute == "MDL1":
         data.MDL1 = selfEntry.get()
+        if not data.puma.startswith("904"):
+            displayError(6, "Wrong MDL serial number")
+            ClearField(selfEntry)  # Clear entry field
+            selfEntry.focus_set()
 
     elif attribute == "MDL2":
         data.MDL2 = selfEntry.get()
+        if not data.puma.startswith("904"):
+            displayError(6, "Wrong MDL serial number")
+            ClearField(selfEntry)  # Clear entry field
+            selfEntry.focus_set()
 
     else:
         print("Error\nBad entry field")
@@ -430,6 +442,12 @@ def startOver():
 
 
 def doMacro(): #Macro is performed
+
+    # Kill labViewIntegration if it's running. This avoids potentially having two instances of this
+    # process running in the background
+    subprocess.call([".\\LabViewIntegrationKiller.exe"])
+
+    # Save values so they can be read by the macro
     sotredValues_Path = (".\\Macro\\Stored values.txt")
     with open(sotredValues_Path, 'w') as outfile:
         outfile.write(str(data.badge) + "\n")
@@ -441,7 +459,8 @@ def doMacro(): #Macro is performed
         outfile.write(data.MDL2 + "\n")
 
     # Call a macro to start the test
-
+    """
+    These are different ways to call programs    
     # os.chdir('.\\Macro')
     # os.system('".\\Macro\\LabViewIntegration.exe"')
     # os.startfile(".\\Macro\\LabViewIntegration.exe")
@@ -449,18 +468,9 @@ def doMacro(): #Macro is performed
     # subprocess.call([".\\Macro\\LabViewIntegration.exe"])
     # subprocess.Popen([".\\Macro\\LabViewIntegration.exe"])
     # subprocess.run([".\\Macro\\LabViewIntegration.exe"])
+    """
 
-    subprocess.call([".\\Macro\\LabViewIntegration.exe"])
-
-    # while True:
-    #     if os.path.isfile(".\\Macro\\ProcessFinished.txt"):
-    #         os.remove(".\\Macro\\ProcessFinished.txt")
-    #         break
-    #     else:
-    #         time.sleep(1)
-
-    # messagebox.showinfo("done", "macro done")
-
+    subprocess.call([".\\Macro\\LabViewIntegration.exe"])#, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True) #, cwd=None, timeout=None)
 
     # Start MES integration
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
