@@ -162,6 +162,8 @@ def MESWork(data, driver):
 
     driver.switch_to.default_content()
 
+
+    driver = waitForWebsite(driver, "ID", "T7", 10)
     # driver = waitForWebsite(driver, "ID", "sampleoverlay", 5)                                                         # No need to check for sample
     driver,_ = fillEntryBox(driver, "ID", "Couldn't find serial entry box", data.serialNumber, ID="T7")                 # Input serial number
     driver = pressButton(driver, "XPath", "Couldn't find load button", XPath="/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
