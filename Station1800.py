@@ -10,6 +10,7 @@ from MESintegration import MESLogout
 import time
 import configparser
 from shutil import copyfile
+from ProcessKiller import killProcess
 
 
 class _time:
@@ -438,7 +439,6 @@ def startOver():
     inputField.Puma["state"] = "disabled"                   # Disable Puma input field
     inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
 
-    # RiseGUI()                                               # Bring GUI to front again
     inputField.Serial.focus_set()                           # Set focus on serial input field
 
 
@@ -462,6 +462,7 @@ def doMacro(): #Macro is performed
         outfile.write(data.MDL2 + "\n")
 
     # Call a macro to start the test
+    print("Calling macro")
     """
     These are different ways to call programs    
     # os.chdir('.\\Macro')
@@ -719,15 +720,6 @@ if __name__ == "__main__":
     workingTime = _time(0, 0)
 
 
-    """# Create hidden folder to store data
-    HiddenFolder = os.path.join(os.path.expanduser("~"), 'Documents', 'Macro for 1800')
-    if not os.path.isdir(HiddenFolder):
-        os.mkdir(HiddenFolder)
-        # This makes the folder invisible
-        subprocess.check_call(["attrib", "+H", HiddenFolder])"""
-
-
-
     # Create the settings file that the macro will use for the LabViewIntegration
     macroSettings_Path = ".\\Macro\\Macro Settings.ini"
     if not os.path.isfile(macroSettings_Path):
@@ -755,6 +747,9 @@ if __name__ == "__main__":
         with open(macroSettings_Path, 'w') as configfile:
             macroSettings.write(configfile)
 
+    # Kill any Chrome process
+    killProcess("CHROME.EXE")
+    killProcess("CHROMEDRIVER.EXE")
 
     # Execute GUI
     GUI()

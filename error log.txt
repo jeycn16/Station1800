@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "tkinter\__init__.py", line 1883, in __call__
+  File "Station1800.py", line 683, in <lambda>
+  File "Station1800.py", line 276, in GoToNextEntry
+  File "Station1800.py", line 479, in doMacro
+  File "MESintegration.py", line 174, in MESWork
+  File "selenium\webdriver\remote\switch_to.py", line 65, in default_content
+  File "selenium\webdriver\remote\webdriver.py", line 321, in execute
+  File "selenium\webdriver\remote\errorhandler.py", line 242, in check_response
+selenium.common.exceptions.WebDriverException: Message: chrome not reachable
+  (Session info: chrome=80.0.3987.163)
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "tkinter\__init__.py", line 1883, in __call__
+  File "Station1800.py", line 683, in <lambda>
+  File "Station1800.py", line 276, in GoToNextEntry
+  File "Station1800.py", line 479, in doMacro
+  File "MESintegration.py", line 177, in MESWork
+TypeError: cannot unpack non-iterable WebDriver object

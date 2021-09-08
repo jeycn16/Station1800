@@ -7,6 +7,10 @@ from selenium.webdriver.common.keys import Keys
 from tkinter import messagebox
 import time
 import os
+from ProcessKiller import killProcess
+
+webdriver.ChromeOptions().add_argument("--ignore-certificate-errors")
+webdriver.ChromeOptions().add_argument("--no-sandbox")
 
 def fileList(directory, *extension):
     """
@@ -114,6 +118,28 @@ def waitForWebsite(driver, findBy, item, waitTime):
                 print("Couldn't find item: " + item)
                 messagebox.showwarning("Warning", "Couldn't find item: " + item)
 
+        elif findBy =="Class":
+            try:
+
+                WebDriverWait(driver, 20).until(EC.visibility_of_element_located(
+                    (By.CLASS_NAME, item)))
+
+                """WebDriverWait(driver, waitTime).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, item))
+                )"""
+
+                print(item + " found")
+                return driver
+            except:
+                print("Couldn't find item " + item)
+                messagebox.showwarning("Warning", "Couldn't find item: " + item)
+
+            try:
+                print("Searching for object")
+                driver.find_element_by_class_name(item)
+            except:
+                print("No luck searching by object with driver.find_element_by_class_name(item)")
+
 
 def fillEntryBox(driver,findBy, errorMessage, text, ID=None, XPath=None, Class=None):
     x = None
@@ -151,7 +177,7 @@ def fillEntryBox(driver,findBy, errorMessage, text, ID=None, XPath=None, Class=N
 def MESLogIn(data):
     driver = LaunchBrowser()
     driver = waitForWebsite(driver, "ID", "LogInButton", 10)
-    driver,_ = fillEntryBox(driver, "ID", "Couldn't find id", data.badge, ID="BadgeIDTextBox")
+    driver, _ = fillEntryBox(driver, "ID", "Couldn't find id", data.badge, ID="BadgeIDTextBox")
     driver = pressButton(driver, "ID", "Couldn't find login button", ID="LogInButton")
     driver = waitForWebsite(driver, "ID", "T7", 10)
     return driver
@@ -160,35 +186,61 @@ def MESLogIn(data):
 #--------------------------------------------------------------------------------------------------------------#
 def MESWork(data, driver):
 
-    driver.switch_to.default_content()
 
+    try:
+        driver.switch_to.default_content()
+    except Exception as e:
 
+        if str(e).startswith("Message: chrome not reachable") == True:
+            # if e.startswith("Message: chrome not reachable") == True:
+            print("Can't reach")
+            # Chrome was closed and needs to be relaunched
+            print("Chrome was closed and needs to be relaunched")
+
+            # Kill every Chrome process
+            killProcess("CHROME.EXE")
+            killProcess("CHROMEDRIVER.EXE")
+
+            # Log in again
+            driver = MESLogIn(data)
+
+        else:
+            print(e)
+    # driver.switch_to.default_content()
     driver = waitForWebsite(driver, "ID", "T7", 10)
+
+
     # driver = waitForWebsite(driver, "ID", "sampleoverlay", 5)                                                         # No need to check for sample
     driver,_ = fillEntryBox(driver, "ID", "Couldn't find serial entry box", data.serialNumber, ID="T7")                 # Input serial number
     driver = pressButton(driver, "XPath", "Couldn't find load button", XPath="/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
     driver = waitForWebsite(driver, "ID", "E2frameEmbedPage", 10)
 
     # Switch to contentFrame iFrame
-    driver.switch_to.frame("E2frameEmbedPage")
-    driver = waitForWebsite(driver, "ID", "T2", 10)
+    try:
+        driver.switch_to.frame("E2frameEmbedPage")
+        driver = waitForWebsite(driver, "ID", "T2", 10)
 
 
-    if data.unitType == "DF" or data.unitType == "IR":
-        driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.puma, ID="T2")
+        if data.unitType == "DF" or data.unitType == "IR":
+            driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.puma, ID="T2")
+            entryBox.send_keys(Keys.RETURN)
+            time.sleep(2)
+
+
+        driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.MDL1, ID="T2")
         entryBox.send_keys(Keys.RETURN)
         time.sleep(2)
 
 
-    driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.MDL1, ID="T2")
-    entryBox.send_keys(Keys.RETURN)
-    time.sleep(2)
+        if data.unitSize == 48 or data.unitSize == 60:
+            driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.MDL2, ID="T2")
+            entryBox.send_keys(Keys.RETURN)
+            time.sleep(2)
 
+    except:
+        # Unit already scanned
+        driver = waitForWebsite(driver, "Class", "skfli sklc skc lblBackflushComplete_skc", 10)
 
-    if data.unitSize == 48 or data.unitSize == 60:
-        driver, entryBox = fillEntryBox(driver, "ID", "Couldn't find vendor barcode entry box, ID", data.MDL2, ID="T2")
-        entryBox.send_keys(Keys.RETURN)
-        time.sleep(2)
 
     driver.switch_to.default_content()
     return driver
