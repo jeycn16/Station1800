@@ -474,6 +474,16 @@ def doMacro(): #Macro is performed
     # subprocess.run([".\\Macro\\LabViewIntegration.exe"])
     """
 
+    # EXPERIMENTAL FEATURE
+    import win32gui, win32con
+    try:
+        hwnd = win32gui.FindWindow(None, "Standard Test Interface")
+        win32gui.SetForegroundWindow(hwnd)
+        win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+    except Exception as e:
+        print(e)
+
+
     subprocess.call([".\\Macro\\LabViewIntegration.exe"])#, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True) #, cwd=None, timeout=None)
 
     # Start MES integration

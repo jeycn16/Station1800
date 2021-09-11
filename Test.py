@@ -79,20 +79,62 @@
 #
 
 
-# import win32gui, win32con
+import win32gui, win32con
+try:
+    # hwnd = win32gui.FindWindow("Notepad", None)
+    hwnd = win32gui.FindWindow(None, "Standard Test Interface")
+    print(hwnd)
+    win32gui.SetForegroundWindow(hwnd)
+    # hwnd = win32gui.GetForegroundWindow()
+    win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+except Exception as e:
+    print(e)
+    # input("press enter")
+# import ctypes
 #
-# # hwnd = win32gui.FindWindow("Notepad", None)
-# hwnd = win32gui.FindWindow("Standard Test Interface", None)
-# win32gui.SetForegroundWindow(hwnd)
-# # hwnd = win32gui.GetForegroundWindow()
-# win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+# user32 = ctypes.WinDLL('user32')
+# hwnd = user32.FindWindow("Standard Test Interface", None)
+# SW_MAXIMISE = 3
+#
+# hWnd = user32.GetForegroundWindow()
+#
+# user32.ShowWindow(hWnd, SW_MAXIMISE)
+
+
 
 import ctypes
+import win32gui
+EnumWindows = ctypes.windll.user32.EnumWindows
+EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
+GetWindowText = ctypes.windll.user32.GetWindowTextW
+GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
+IsWindowVisible = ctypes.windll.user32.IsWindowVisible
 
-user32 = ctypes.WinDLL('user32')
-hwnd = user32.FindWindow("Standard Test Interface", None)
-SW_MAXIMISE = 3
+titles = []
+def foreach_window(hwnd, lParam):
+    if IsWindowVisible(hwnd):
+        length = GetWindowTextLength(hwnd)
+        buff = ctypes.create_unicode_buffer(length + 1)
+        GetWindowText(hwnd, buff, length + 1)
+        titles.append((hwnd, buff.value))
+    return True
+EnumWindows(EnumWindowsProc(foreach_window), 0)
 
-hWnd = user32.GetForegroundWindow()
+for i in range(len(titles)):
+    print(titles[i])
+    if titles[i][1] == "*Untitled - Notepad":
+        try:
+            # hwnd = win32gui.FindWindow("Notepad", None)
+            # hwnd = win32gui.FindWindow("Standard Test Interface", None)
+            win32gui.SetForegroundWindow(titles[i][0])
+            # hwnd = win32gui.GetForegroundWindow()
+            win32gui.ShowWindow(titles[i][0], win32con.SW_MAXIMIZE)
+        except Exception as e:
+            print(e)
 
-user32.ShowWindow(hWnd, SW_MAXIMISE)
+input("press enter")
+# win32gui.MoveWindow((titles)[5][0], 0, 0, 760, 500, True)
+
+
+# HLD = win32gui. FindWindow (None, "Notepad")
+# print(HLD)
