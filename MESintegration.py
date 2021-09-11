@@ -137,6 +137,7 @@ def waitForWebsite(driver, findBy, item, waitTime):
             try:
                 print("Searching for object")
                 driver.find_element_by_class_name(item)
+                print("Found 123")
             except:
                 print("No luck searching by object with driver.find_element_by_class_name(item)")
 
