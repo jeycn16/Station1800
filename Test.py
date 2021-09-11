@@ -79,7 +79,20 @@
 #
 
 
-import win32gui, win32con
+# import win32gui, win32con
+#
+# # hwnd = win32gui.FindWindow("Notepad", None)
+# hwnd = win32gui.FindWindow("Standard Test Interface", None)
+# win32gui.SetForegroundWindow(hwnd)
+# # hwnd = win32gui.GetForegroundWindow()
+# win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
 
-hwnd = win32gui.GetForegroundWindow()
-win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+import ctypes
+
+user32 = ctypes.WinDLL('user32')
+hwnd = user32.FindWindow("Standard Test Interface", None)
+SW_MAXIMISE = 3
+
+hWnd = user32.GetForegroundWindow()
+
+user32.ShowWindow(hWnd, SW_MAXIMISE)
