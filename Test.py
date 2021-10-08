@@ -80,15 +80,19 @@
 
 
 import win32gui, win32con
-try:
-    # hwnd = win32gui.FindWindow("Notepad", None)
-    hwnd = win32gui.FindWindow(None, "Standard Test Interface")
-    print(hwnd)
-    win32gui.SetForegroundWindow(hwnd)
-    # hwnd = win32gui.GetForegroundWindow()
-    win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
-except Exception as e:
-    print(e)
+# try:
+#     # hwnd = win32gui.FindWindow("Notepad", None)
+#     hwnd = win32gui.FindWindow(None, "Standard Test Interface")
+#     print(hwnd)
+#     win32gui.SetForegroundWindow(hwnd)
+#     # hwnd = win32gui.GetForegroundWindow()
+#     win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+# except Exception as e:
+#     print(e)
+
+
+
+
     # input("press enter")
 # import ctypes
 #
@@ -122,13 +126,17 @@ EnumWindows(EnumWindowsProc(foreach_window), 0)
 
 for i in range(len(titles)):
     print(titles[i])
-    if titles[i][1] == "*Untitled - Notepad":
+    if titles[i][1] == "Macro for Station 1800, by Jeyc":
+        print("found")
         try:
+            hwnd = win32gui.FindWindow(titles[i][1], None)
+            hwnd = win32gui.FindWindow(None, titles[i][1])
+
             # hwnd = win32gui.FindWindow("Notepad", None)
             # hwnd = win32gui.FindWindow("Standard Test Interface", None)
-            win32gui.SetForegroundWindow(titles[i][0])
+            win32gui.SetForegroundWindow(hwnd)
             # hwnd = win32gui.GetForegroundWindow()
-            win32gui.ShowWindow(titles[i][0], win32con.SW_MAXIMIZE)
+            # win32gui.ShowWindow(titles[i][0], win32con.SW_MAXIMIZE)
         except Exception as e:
             print(e)
 

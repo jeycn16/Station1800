@@ -11,6 +11,7 @@ import time
 import configparser
 from shutil import copyfile
 from ProcessKiller import killProcess
+import win32gui, win32con
 
 
 class _time:
@@ -474,17 +475,37 @@ def doMacro(): #Macro is performed
     # subprocess.run([".\\Macro\\LabViewIntegration.exe"])
     """
 
-    # EXPERIMENTAL FEATURE
-    import win32gui, win32con
+    def findApplication (applicationName):
+        """
+        This function returns the application handle of a program running in your computer
+
+        For example, assume that you have Notepad open and you would like to get the handle of this program so you can
+        interact with it (bring to front, maximize, etc). you would use this application in the following way
+
+        appHndl = findApplication("Untitled - Notepad")
+        try:
+            win32gui.SetForegroundWindow(appHndl)
+        except:
+            print("Couldn't bring Notepad to the front of your screen")
+        """
+
+        try:
+            return win32gui.FindWindow(None, applicationName)
+        except Exception as e:
+            print(e)
+
+
+    LabView_hwnd = findApplication("Standard Test Interface")
     try:
-        hwnd = win32gui.FindWindow(None, "Standard Test Interface")
-        win32gui.SetForegroundWindow(hwnd)
-        win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+        win32gui.SetForegroundWindow(LabView_hwnd)
+        win32gui.ShowWindow(LabView_hwnd, win32con.SW_MAXIMIZE)
     except Exception as e:
         print(e)
 
 
+    print("Executing LabViewIntegration.exe")
     subprocess.call([".\\Macro\\LabViewIntegration.exe"])#, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True) #, cwd=None, timeout=None)
+    print("LabView processed")
 
     # Start MES integration
     driver.driver = MESWork(data, driver.driver)            # Call driver and input data                              # MES Integration
@@ -493,7 +514,18 @@ def doMacro(): #Macro is performed
     inputField.Puma["state"] = "disabled"                   # Disable Puma input field
     inputField.MDL2["state"] = "disabled"                   # Disable MDL2 input field
 
-    RiseGUI()                                               # Bring GUI to front again
+    print("Bring GUI to front")
+    GUI_hwnd = findApplication("Macro for Station 1800, by Jeyc")
+    try:
+        win32gui.SetForegroundWindow(GUI_hwnd)
+    except Exception as e:
+        print(e)
+
+
+    # RiseGUI()                                               # Bring GUI to front again
+
+
+    print("GUI up. Clearing entry fields")
     inputField.Serial.focus_set()                           # Set focus on serial input field
 
     workingTime.lastScan = time.perf_counter()              # Taking time after each unit done
