@@ -102,9 +102,10 @@ def waitForWebsite(driver, findBy, item, waitTime):
                                "Accept this message ONLY AFTER the sample requirement has been satisfied")
 
 
-    except:
+    except Exception as e:
         print("No sample required. Carry on")
 
+    finally:
         if findBy == "ID":
             try:
                 WebDriverWait(driver, waitTime).until(
@@ -112,16 +113,19 @@ def waitForWebsite(driver, findBy, item, waitTime):
                 )
 
                 print(item + " found")
-                return driver       # Item found
+
 
             except:
                 print("Couldn't find item: " + item)
                 messagebox.showwarning("Warning", "Couldn't find item: " + item)
 
+            finally:
+                return driver
+
         elif findBy =="Class":
             try:
 
-                WebDriverWait(driver, 20).until(EC.visibility_of_element_located(
+                WebDriverWait(driver, waitTime).until(EC.visibility_of_element_located(
                     (By.CLASS_NAME, item)))
 
                 """WebDriverWait(driver, waitTime).until(
@@ -133,6 +137,8 @@ def waitForWebsite(driver, findBy, item, waitTime):
             except:
                 print("Couldn't find item " + item)
                 messagebox.showwarning("Warning", "Couldn't find item: " + item)
+
+
 
             try:
                 print("Searching for object")
@@ -180,16 +186,17 @@ def MESLogIn(data):
     driver = waitForWebsite(driver, "ID", "LogInButton", 10)
     driver, _ = fillEntryBox(driver, "ID", "Couldn't find id", data.badge, ID="BadgeIDTextBox")
     driver = pressButton(driver, "ID", "Couldn't find login button", ID="LogInButton")
-    driver = waitForWebsite(driver, "ID", "T7", 10)
+    driver = waitForWebsite(driver, "ID", "T7", 30)
     return driver
 
 
 #--------------------------------------------------------------------------------------------------------------#
 def MESWork(data, driver):
 
-
+    print("switching to default frame")
     try:
         driver.switch_to.default_content()
+        print("switched to default frame")
     except Exception as e:
 
         if str(e).startswith("Message: chrome not reachable") == True:
@@ -208,7 +215,7 @@ def MESWork(data, driver):
         else:
             print(e)
     # driver.switch_to.default_content()
-    driver = waitForWebsite(driver, "ID", "T7", 10)
+    driver = waitForWebsite(driver, "ID", "T7", 30)
 
 
     # driver = waitForWebsite(driver, "ID", "sampleoverlay", 5)                                                         # No need to check for sample
@@ -216,7 +223,7 @@ def MESWork(data, driver):
     driver = pressButton(driver, "XPath", "Couldn't find load button", XPath="/html/body/form/div/div[10]/div[2]/div/div/div[1]/div[1]/div[4]/div/div[2]/div[5]/div[1]/div[4]/div/div/div[1]/div[1]/div[4]/div/div[2]/div/div[1]/div[2]/button")
     driver = waitForWebsite(driver, "ID", "E2frameEmbedPage", 10)
 
-    # Switch to contentFrame iFrame
+    print("Switch to contentFrame iFrame")
     try:
         driver.switch_to.frame("E2frameEmbedPage")
         driver = waitForWebsite(driver, "ID", "T2", 10)
